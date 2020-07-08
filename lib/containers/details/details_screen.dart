@@ -5,7 +5,7 @@ import '../../components/Product.dart';
 import './components/body.dart';
 
 class DetailsScreen extends StatelessWidget {
-  final Product product;
+  final product;
 
   const DetailsScreen({Key key, this.product}) : super(key: key);
   @override
@@ -20,27 +20,9 @@ class DetailsScreen extends StatelessWidget {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      title: Text('Product Details', style: TextStyle(color: Colors.black),),
+      title: Text('DETAILS', style: TextStyle(color: Colors.black),),
       backgroundColor: Colors.white,
-      elevation: 0,
-//      leading: IconButton(
-//        icon: SvgPicture.asset(
-//          'assets/icons/back.svg',
-//          color: Colors.white,
-//        ),
-//        onPressed: () => Navigator.pop(context),
-//      ),
-//      actions: <Widget>[
-//        IconButton(
-//          icon: SvgPicture.asset("assets/icons/search.svg"),
-//          onPressed: () {},
-//        ),
-//        IconButton(
-//          icon: SvgPicture.asset("assets/icons/cart.svg"),
-//          onPressed: () {},
-//        ),
-//        SizedBox(width: kDefaultPaddin / 2)
-//      ],
+      elevation: 0
     );
   }
 }

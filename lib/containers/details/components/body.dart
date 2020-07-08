@@ -3,13 +3,14 @@ import './../../../constants.dart';
 import './../../../components/Product.dart';
 
 import './add_to_cart.dart';
-import 'color_and_size.dart';
-import 'counter_with_fav_btn.dart';
-import 'description.dart';
-import 'product_title_with_image.dart';
+import './color_and_size.dart';
+import './counter_with_fav_btn.dart';
+import './description.dart';
+import './product_title_with_image.dart';
+import './../../../utils/mColors.dart';
 
 class Body extends StatelessWidget {
-  final Product product;
+  final product;
 
   const Body({Key key, this.product}) : super(key: key);
   @override
@@ -24,15 +25,15 @@ class Body extends StatelessWidget {
             child: Stack(
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(top: size.height * 0.3),
+                  margin: EdgeInsets.only(top: size.height * 0.2),
                   padding: EdgeInsets.only(
-                    top: size.height * 0.12,
+                    top: size.height * 0.2,
                     left: kDefaultPaddin,
                     right: kDefaultPaddin,
                   ),
                   // height: 500,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: redColor,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
@@ -40,11 +41,11 @@ class Body extends StatelessWidget {
                   ),
                   child: Column(
                     children: <Widget>[
-                      ColorAndSize(product: product),
+//                      ColorAndSize(product: product),
                       SizedBox(height: kDefaultPaddin / 2),
                       Description(product: product),
                       SizedBox(height: kDefaultPaddin / 2),
-                      CounterWithFavBtn(),
+//                      CounterWithFavBtn(),
                       SizedBox(height: kDefaultPaddin / 2),
                       AddToCart(product: product)
                     ],

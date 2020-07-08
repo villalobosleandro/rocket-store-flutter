@@ -9,7 +9,7 @@ class ColorAndSize extends StatelessWidget {
     @required this.product,
   }) : super(key: key);
 
-  final Product product;
+  final product;
 
   @override
   Widget build(BuildContext context) {

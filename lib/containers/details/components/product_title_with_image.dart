@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './../../../components/Product.dart';
 
 import './../../../constants.dart';
+import './../../../utils/mColors.dart';
 
 class ProductTitleWithImage extends StatelessWidget {
   const ProductTitleWithImage({
@@ -9,7 +10,7 @@ class ProductTitleWithImage extends StatelessWidget {
     @required this.product,
   }) : super(key: key);
 
-  final Product product;
+  final product;
 
   @override
   Widget build(BuildContext context) {
@@ -18,16 +19,13 @@ class ProductTitleWithImage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+//          Text(
+//            "Aristocratic Hand Bag",
+//            style: TextStyle(color: Colors.red),
+//          ),
           Text(
-            "Aristocratic Hand Bag",
-            style: TextStyle(color: Colors.white),
-          ),
-          Text(
-            product.name,
-            style: Theme.of(context)
-                .textTheme
-                .headline4
-                .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+            product['name'],
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 24),
           ),
           SizedBox(height: kDefaultPaddin),
           Row(
@@ -35,9 +33,9 @@ class ProductTitleWithImage extends StatelessWidget {
               RichText(
                 text: TextSpan(
                   children: [
-                    TextSpan(text: "Price\n"),
+//                      TextSpan(text: "Price\n", style: TextStyle(color: redColor, fontSize: 24)),
                     TextSpan(
-                      text: "\$${product.price}",
+                      text: "\$${product['price']}",
                       style: Theme.of(context).textTheme.headline4.copyWith(
                           color: Colors.white, fontWeight: FontWeight.bold),
                     ),
@@ -47,9 +45,9 @@ class ProductTitleWithImage extends StatelessWidget {
               SizedBox(width: kDefaultPaddin),
               Expanded(
                 child: Hero(
-                  tag: "${product.id}",
+                  tag: "${product['_id']}",
                   child: Image.asset(
-                    product.presentationImage,
+                    'assets/images/bag_2.png',
                     fit: BoxFit.fill,
                   ),
                 ),

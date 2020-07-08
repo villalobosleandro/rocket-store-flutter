@@ -9,15 +9,15 @@ class Description extends StatelessWidget {
     @required this.product,
   }) : super(key: key);
 
-  final Product product;
+  final product;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin),
       child: Text(
-        product.description,
-        style: TextStyle(height: 1.5),
+        product['description'],
+        style: TextStyle(height: 1.5, color: Colors.white),
       ),
     );
   }

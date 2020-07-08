@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-import './Product.dart';
 import './../constants.dart';
 import './../utils/mColors.dart';
 
 class ItemCard extends StatefulWidget {
-  final Product product;
+  final product;
   final Function press;
   const ItemCard({Key key, this.product, this.press}) : super(key: key);
 
@@ -20,7 +19,7 @@ class _ItemCardState extends State<ItemCard> {
     // TODO: implement initState
     super.initState();
     print('ajjjjjajajjajajaja');
-    print(widget.product.name);
+    print(widget.product['pictures'][0]);
   }
 
 
@@ -34,17 +33,13 @@ class _ItemCardState extends State<ItemCard> {
           Expanded(
             child: Container(
               padding: EdgeInsets.all(kDefaultPaddin),
-              // For  demo we use fixed height  and width
-              // Now we dont need them
-              // height: 180,
-              // width: 160,
               decoration: BoxDecoration(
                 color: redColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Hero(
-                tag: "${widget.product.id}",
-                child: Image.asset(widget.product.presentationImage),
+                tag: "${widget.product['_id']}",
+                child: Image.network(widget.product['pictures'][0]),
               ),
             ),
           ),
@@ -52,12 +47,12 @@ class _ItemCardState extends State<ItemCard> {
             padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin / 4),
             child: Text(
               // products is out demo list
-              widget.product.name,
+              widget.product['name'],
               style: TextStyle(color: kTextLightColor),
             ),
           ),
           Text(
-            "\$${widget.product.price}",
+            "\$${widget.product['price']}",
             style: TextStyle(fontWeight: FontWeight.bold),
           )
         ],
