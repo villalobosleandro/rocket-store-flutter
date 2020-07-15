@@ -8,7 +8,8 @@ class Session {
   set(String token, String userId) async {
     final data = {
       "token": token,
-      "userId": userId
+      "userId": userId,
+      "car": []
     };
 
     await storage.write(key: key, value: jsonEncode(data));

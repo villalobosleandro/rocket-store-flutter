@@ -18,8 +18,8 @@ class _ItemCardState extends State<ItemCard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('ajjjjjajajjajajaja');
-    print(widget.product['pictures'][0]);
+//    print('ajjjjjajajjajajaja');
+//    print(widget.product['pictures'][0]);
   }
 
 
@@ -39,7 +39,11 @@ class _ItemCardState extends State<ItemCard> {
               ),
               child: Hero(
                 tag: "${widget.product['_id']}",
-                child: Image.network(widget.product['pictures'][0]),
+                child: Image.asset(
+                  'assets/images/bag_2.png',
+//                  fit: BoxFit.fill,
+                ),
+//                child: Image.network(widget.product['pictures'][0]),
               ),
             ),
           ),

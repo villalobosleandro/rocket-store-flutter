@@ -4,6 +4,7 @@ import './constants.dart';
 import './containers/home/home_screen.dart';
 import './containers/login/login_screen.dart';
 import './containers/splash/splash.dart';
+import './containers/details/details_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,6 +14,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
+    final routes = <String, WidgetBuilder> {
+      'login': (BuildContext context) => Login(),
+      'home': (BuildContext context) => HomeScreen(),
+      'detailScreen': (BuildContext context) => DetailsScreen()
+
+    };
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Rocket Store',
@@ -21,11 +30,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: SplashPage(),
-      routes: {
-        "login": (context) => Login(),
-        "home": (context) => HomeScreen()
-
-      },
+      routes: routes,
     );
   }
 }

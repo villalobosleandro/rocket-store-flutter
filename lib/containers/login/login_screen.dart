@@ -110,7 +110,7 @@ class _LoginState extends State<Login> {
         child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/images/rockstorelogin.png"),
+              image: AssetImage("assets/images/rockstoreloginWhite.jpg"),
               fit: BoxFit.cover,
             ),
           ),
@@ -124,26 +124,12 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: <Widget>[
 
-                        Container(
-                          width: responsive.wp(25),
-                          height: responsive.wp(25),
-                          margin: EdgeInsets.only(top: size.width * 0.1),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage('assets/images/logoRocketWhite.png'),
-                                fit: BoxFit.scaleDown
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: responsive.hp(2)),
-
                         Text('ROCKET',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: responsive.ip(7),
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.black,
                               fontFamily: 'RobotoSlab Bold'
                           ),
                         ),
@@ -152,12 +138,26 @@ class _LoginState extends State<Login> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: responsive.ip(4),
-                              color: Colors.white,
+                              color: Colors.black,
                               fontFamily: 'RobotoSlab Light'
                           ),
                         ),
 
-                        SizedBox(height: responsive.hp(14)),
+                        SizedBox(height: responsive.hp(20)),
+//
+//                        Container(
+//                          width: responsive.wp(25),
+//                          height: responsive.wp(25),
+//                          margin: EdgeInsets.only(top: size.width * 0.1),
+//                          decoration: BoxDecoration(
+//                            image: DecorationImage(
+//                                image: AssetImage('assets/images/rocketB.png'),
+//                                fit: BoxFit.scaleDown
+//                            ),
+//                          ),
+//                        ),
+
+                        SizedBox(height: responsive.hp(12)),
 
                         ConstrainedBox(
                           constraints: BoxConstraints(
@@ -169,25 +169,17 @@ class _LoginState extends State<Login> {
                             child: Column(
                               children: <Widget>[
                                 Container(
-                                  width: size.width - 30,
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(color: Colors.white, width: 2.0)
-                                      )
-                                  ),
+                                  width: size.width - 50,
                                   child: TextFormField(
                                     textCapitalization: TextCapitalization.none,
                                     onChanged: (value) => _email = value,
-//                                validator: (String text) {
-//                                  if(text.isNotEmpty && text.length > 5) {
-//                                    _email = text;
-//                                    return null;
-//                                  }
-//                                  return "Invalid email or username";
-//                                },
                                     decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.black,
                                       hintText: 'Email',
-                                      border: InputBorder.none,
+                                      border: UnderlineInputBorder(
+                                        borderRadius: BorderRadius.circular(5)
+                                      ),
                                       hintStyle: const TextStyle(color: Colors.white, fontSize: 15.0),
                                     ),
                                     keyboardType: TextInputType.emailAddress,
@@ -201,25 +193,17 @@ class _LoginState extends State<Login> {
                                 SizedBox(height: responsive.hp(3)),
 
                                 Container(
-                                  width: size.width - 30,
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(color: Colors.white, width: 2.0)
-                                      )
-                                  ),
+                                  width: size.width - 50,
                                   child: TextFormField(
                                     textCapitalization: TextCapitalization.none,
                                     onChanged: (value) => _password = value,
-//                                validator: (String text) {
-//                                  if(text.isNotEmpty && text.length > 5) {
-//                                    _password = text;
-//                                    return null;
-//                                  }
-//                                  return "Invalid password";
-//                                },
                                     decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.black,
                                       hintText: 'Password',
-                                      border: InputBorder.none,
+                                      border: UnderlineInputBorder(
+                                          borderRadius: BorderRadius.circular(5)
+                                      ),
                                       hintStyle: const TextStyle(color: Colors.white, fontSize: 15.0),
                                     ),
                                     keyboardType: TextInputType.text,
@@ -235,7 +219,7 @@ class _LoginState extends State<Login> {
                           ),
                         ),
 
-                        SizedBox(height: responsive.hp(16)),
+                        SizedBox(height: responsive.hp(22)),
 
                         ButtonTheme(
                           minWidth: size.width - 30,
