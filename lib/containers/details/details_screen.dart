@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -19,10 +22,27 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   final hook = useGetAsyncStorageProduct();
+  int numberOfProductsInCart = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    this.getNumberProducts();
+  }
+
+  getNumberProducts() async {
+    final storage = new FlutterSecureStorage();
+    Map<String, String> allValues = await storage.readAll();
+    var aux = jsonDecode(allValues['car']);
+    for(int x = 0; x < aux.length; x++){
+      numberOfProductsInCart = numberOfProductsInCart + aux[x]['quantity'];
+    }
+    print(';;;;;;;;;;;;;;;;;;; $numberOfProductsInCart');
+  }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+//    Size size = MediaQuery.of(context).size;
 
     _addElementToCart() async {
       dynamic element = {
@@ -66,6 +86,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         flexibleSpace: TopBar(
           routeName: 'home',
           title: 'DETAILS',
+          number: numberOfProductsInCart,
         ),
       ),
       body: Column(

@@ -16,10 +16,7 @@ class _ItemCardState extends State<ItemCard> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-//    print('ajjjjjajajjajajaja');
-//    print(widget.product['pictures'][0]);
   }
 
 
@@ -32,7 +29,7 @@ class _ItemCardState extends State<ItemCard> {
         children: <Widget>[
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(kDefaultPaddin),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: redColor,
                 borderRadius: BorderRadius.circular(16),
@@ -41,18 +38,18 @@ class _ItemCardState extends State<ItemCard> {
                 tag: "${widget.product['_id']}",
                 child: Image.asset(
                   'assets/images/bag_2.png',
-//                  fit: BoxFit.fill,
+                   fit: BoxFit.fill,
                 ),
 //                child: Image.network(widget.product['pictures'][0]),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin / 4),
+            padding: const EdgeInsets.symmetric(vertical: 20 / 4),
             child: Text(
-              // products is out demo list
               widget.product['name'],
-              style: TextStyle(color: kTextLightColor),
+              style: TextStyle(color: Colors.grey),
+              maxLines: 1,
             ),
           ),
           Text(

@@ -11,11 +11,18 @@ class useGetAsyncStorageProduct {
 
 
 
-  Future getNumberOfProduct() async {
+//  Future getNumberOfProduct() async {
+//    final storage = new FlutterSecureStorage();
+//    var numberOfProductsInCart = 0;
+//    Map<String, String> allValues = await storage.readAll();
+//    var aux = jsonDecode(allValues['car']);
+//    for(int x = 0; x < aux.length; x++){
+//      numberOfProductsInCart = numberOfProductsInCart + aux[x]['quantity'];
+//    }
+//    return numberOfProductsInCart;
+//  }
 
-  }
-
-  Future getCar() async {
+  getCar() async {
     Map<String, String> allValues = await storage.readAll();
     return allValues['car'];
   }
@@ -27,18 +34,15 @@ class useGetAsyncStorageProduct {
     for (var i = 0; i < aux.length; ++i) {
       if(aux[i]['_id'] == id) {
         if(type == 'delete') {
-          aux[i]['quantity']--;
+          aux[i]['quantity'] = aux[i]['quantity'] - 1;
         }else{
-          aux[i]['quantity']++;
+          aux[i]['quantity'] = aux[i]['quantity'] + 1;
         }
       }
     }
 
-    aux = [aux.where((item) => item['quantity'] != 0)];
-    print('aux $aux');
-//    print(jsonEncode([aux]));
-//    await storage.write(key: 'car', value: jsonEncode([aux]));
-//    return false;
+    aux = aux.where((item) => item['quantity'] != 0).toList();
+    await storage.write(key: 'car', value: jsonEncode(aux));
   }
 
   Future<bool> validateElement(value) async {
@@ -46,7 +50,6 @@ class useGetAsyncStorageProduct {
     var cart = response != null ? jsonDecode(response) : [];
     for (var i = 0; i < cart.length; ++i) {
       if(cart[i]['_id'] == value['_id']) {
-        print('3333333333');
         return true;
       }
     }
@@ -58,11 +61,10 @@ class useGetAsyncStorageProduct {
     var cart = response != null ? jsonDecode(response) : [];
     try {
       if(cart.length == 0) {
-        print('11111111');
         await storage.write(key: 'car', value: jsonEncode([value]));
       }else {
-        print('2222222222222');
         final elementIsInShoppingCart = await validateElement(value);
+
         if(elementIsInShoppingCart) {
           addOrRemoveProductInAsyncStorage('add', value['_id']);
         }else {
@@ -73,6 +75,17 @@ class useGetAsyncStorageProduct {
     }catch(e) {
       return false;
     }
+  }
+
+  deleteCart() async {
+    await storage.write(key: 'car', value: jsonEncode([]));
+  }
+
+  deleteElementCart(id) async {
+    var response = await getCar();
+    var cart = response != null ? jsonDecode(response) : [];
+    var aux = cart.where((item) => item['_id'] != id).toList();
+    await storage.write(key: 'car', value: jsonEncode(aux));
   }
 
 

@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rocket_store_flutter/utils/dialogs.dart';
 
-import '../../constants.dart';
 import './../../components/Product.dart';
 import './../../components/item_card.dart';
 import './../details/details_screen.dart';
@@ -29,19 +29,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     this._getProducts();
-    this._initialValuesOfHeader();
+    this.getNumberProducts();
   }
 
-  _initialValuesOfHeader() async {
-    try {
-//      var cart = await hook.getCar();
-      final storage = new FlutterSecureStorage();
-      Map<String, String> allValues = await storage.readAll();
-      print('/////////////////////////// $allValues');
-    }on PlatformException catch(e) {
-      print(e);
+  getNumberProducts() async {
+    final storage = new FlutterSecureStorage();
+    Map<String, String> allValues = await storage.readAll();
+    var aux = jsonDecode(allValues['car']);
+    for(int x = 0; x < aux.length; x++){
+      numberOfProductsInCart = numberOfProductsInCart + aux[x]['quantity'];
     }
-
   }
 
   _getProducts() async {
@@ -71,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         flexibleSpace: TopBar(
           hideBackButton: true,
+          number: numberOfProductsInCart,
         ),
       ),
       body: isFetching ? Container(
@@ -87,26 +85,23 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GridView.builder(
                   itemCount: itemProducts.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisSpacing: kDefaultPaddin,
-                    crossAxisSpacing: kDefaultPaddin,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
                     childAspectRatio: 0.75,
                   ),
                   itemBuilder: (context, index) => ItemCard(
                     product: itemProducts[index],
                     press: () {
-//                    print('click click');
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailsScreen(
-                              product: itemProducts[index],
-                            ),
-                          ));
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (context) => DetailsScreen(
+                              product : itemProducts[index])),
+                              (route) => false
+                      );
                     },
                   )),
             ),
