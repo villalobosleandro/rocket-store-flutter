@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import './constants.dart';
 import './containers/home/home_screen.dart';
 import './containers/login/login_screen.dart';
 import './containers/splash/splash.dart';
 import './containers/details/details_screen.dart';
 import './containers/shoppingCart/shoppingCart.dart';
+import './hooks/useGetAsyncStorageProduct.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,15 +24,22 @@ class MyApp extends StatelessWidget {
       'shoppingCart': (BuildContext context) => ShoppingCart()
     };
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Rocket Store',
-      theme: ThemeData(
-        textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<useGetAsyncStorageProduct>(
+          create: (_) => useGetAsyncStorageProduct(),
+        )
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Rocket Store',
+        theme: ThemeData(
+          textTheme: Theme.of(context).textTheme.apply(bodyColor: Color(0xFF535353)),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: SplashPage(),
+        routes: routes,
       ),
-      home: SplashPage(),
-      routes: routes,
     );
   }
 }

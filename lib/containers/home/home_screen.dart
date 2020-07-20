@@ -29,17 +29,24 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     this._getProducts();
-    this.getNumberProducts();
+//    this.getNumberProducts();
   }
 
-  getNumberProducts() async {
-    final storage = new FlutterSecureStorage();
-    Map<String, String> allValues = await storage.readAll();
-    var aux = jsonDecode(allValues['car']);
-    for(int x = 0; x < aux.length; x++){
-      numberOfProductsInCart = numberOfProductsInCart + aux[x]['quantity'];
-    }
-  }
+//  getNumberProducts() async {
+//    final storage = new FlutterSecureStorage();
+//    Map<String, String> allValues = await storage.readAll();
+//    print('carrito');
+//    print(allValues['car']);
+//    if(allValues['car'] != null) {
+//      var aux = jsonDecode(allValues['car']);
+//      for(int x = 0; x < aux.length; x++){
+//        numberOfProductsInCart = numberOfProductsInCart + aux[x]['quantity'];
+//      }
+//    }
+//
+//    print('++++++++++++++++');
+//    print(numberOfProductsInCart);
+//  }
 
   _getProducts() async {
     try {
@@ -67,8 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         elevation: 0,
         flexibleSpace: TopBar(
-          hideBackButton: true,
-          number: numberOfProductsInCart,
+//          hideBackButton: true,
+//          number: numberOfProductsInCart,
         ),
       ),
       body: isFetching ? Container(
@@ -114,13 +121,4 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
-
-//  AppBar buildAppBar() {
-////    return TopBar();
-//    return AppBar(
-//      backgroundColor: Colors.white,
-//      elevation: 0,
-//      title: Text('DASHBOARD', style: TextStyle(color: Colors.black),),
-//    );
-//  }
 }

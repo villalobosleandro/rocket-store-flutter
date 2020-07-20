@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import './../constants.dart';
 import './../utils/mColors.dart';
 
 class ItemCard extends StatefulWidget {
@@ -29,7 +28,7 @@ class _ItemCardState extends State<ItemCard> {
         children: <Widget>[
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 color: redColor,
                 borderRadius: BorderRadius.circular(16),
@@ -45,7 +44,7 @@ class _ItemCardState extends State<ItemCard> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20 / 4),
+            padding: const EdgeInsets.symmetric(vertical: 20 / 3),
             child: Text(
               widget.product['name'],
               style: TextStyle(color: Colors.grey),
