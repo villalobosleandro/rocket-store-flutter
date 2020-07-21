@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 import './../../utils/mColors.dart';
 import './../../components/topBar.dart';
@@ -21,12 +20,13 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  final hook = useGetAsyncStorageProduct();
+  useGetAsyncStorageProduct hook;
   int numberOfProductsInCart = 0;
   bool isFetching = false;
 
   @override
   void initState() {
+    this.hook = Provider.of<useGetAsyncStorageProduct>(context, listen: false);
     super.initState();
   }
 
@@ -65,12 +65,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
           fontSize: 16.0
       );
     }
-
-    final storage = new FlutterSecureStorage();
-    Map<String, String> allValues = await storage.readAll();
-    print('1111111111111111111111111111111111111111111');
-    print(allValues);
-
   }
 
   @override

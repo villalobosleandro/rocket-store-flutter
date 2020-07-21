@@ -11,18 +11,6 @@ class useGetAsyncStorageProduct with ChangeNotifier {
     return allValues['car'];
   }
 
-  getNumberOfProducts() async {
-//    int number = 0;
-    Map<String, String> allValues = await storage.readAll();
-    if(allValues['car'] != null) {
-      var aux = jsonDecode(allValues['car']);
-      for(int x = 0; x < aux.length; x++){
-        productsCount = productsCount + aux[x]['quantity'];
-      }
-    }
-//    return number;
-  }
-
   addOrRemoveProductInAsyncStorage(type, id) async {
     var response = await getCar();
     var aux = response != null ? jsonDecode(response) : [];
@@ -31,9 +19,11 @@ class useGetAsyncStorageProduct with ChangeNotifier {
       if(aux[i]['_id'] == id) {
         if(type == 'delete') {
           aux[i]['quantity'] = aux[i]['quantity'] - 1;
+          productsCount = productsCount -1;
           notifyListeners();
         }else{
           aux[i]['quantity'] = aux[i]['quantity'] + 1;
+          productsCount = productsCount +1;
           notifyListeners();
         }
       }
@@ -79,8 +69,6 @@ class useGetAsyncStorageProduct with ChangeNotifier {
       notifyListeners();
       return true;
     }on Exception catch(e) {
-      print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-      print(e.toString());
       return false;
     }
   }
