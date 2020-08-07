@@ -39,9 +39,11 @@ class _SplashPageState extends State<SplashPage> {
     final data = await _authApi.getAccessToken();
 //    print('***************** session token $data');
     if(data != null) {
-      Navigator.pushReplacementNamed(context, 'home');
+//      Navigator.pushReplacementNamed(context, 'home');
+      Navigator.pushNamed(context, 'home');
     }else {
-      Navigator.pushReplacementNamed(context, 'login');
+//      Navigator.pushReplacementNamed(context, 'login');
+      Navigator.pushNamed(context, 'login');
     }
   }
 

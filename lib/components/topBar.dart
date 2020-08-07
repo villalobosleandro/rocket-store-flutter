@@ -5,9 +5,37 @@ import 'package:provider/provider.dart';
 import './../hooks/useGetAsyncStorageProduct.dart';
 
 
-class TopBar extends StatelessWidget {
-  BuildContext get context => null;
+class TopBar extends StatefulWidget {
+  bool hideBackButton;
+  String title;
+  int numberOfProducts;
 
+  @override
+  _TopBarState createState() => _TopBarState();
+  TopBar({
+    Key key,
+    this.hideBackButton = false,
+    this.title = 'ROCKET',
+    this.numberOfProducts = 0
+  }) : super(key: key);
+
+}
+
+class _TopBarState extends State<TopBar> {
+  BuildContext get context => null;
+  final hook = useGetAsyncStorageProduct();
+
+  @override
+  void initState() {
+    this.numberProducts();
+    super.initState();
+  }
+
+
+  numberProducts() async {
+    int numberOfProductsInCart = await hook.getNumberProducts();
+//    print('tobar $numberOfProductsInCart');
+  }
 
   _logOut() {
     Navigator.of(context).pushNamedAndRemoveUntil('login', (Route<dynamic> route) => false);
@@ -42,20 +70,18 @@ class TopBar extends StatelessWidget {
     return Consumer<useGetAsyncStorageProduct>(
 
       builder: (context, viewModel, child) {
-        print('*************');
-        print(viewModel.productsCount);
+//        print('*************');
+//        print(widget.numberOfProducts);
         return AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: Text('titulo', style: TextStyle(color: Colors.black)),
+          title: Text(widget.title, style: TextStyle(color: Colors.black)),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.redAccent),
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil('home', (Route<dynamic> route) => false);
-            },
-          ) ,
+            icon: Icon(Icons.menu, color: Colors.black, size: 28,),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
           actions: <Widget>[
-            viewModel.productsCount != 0 ?
+            widget.numberOfProducts != 0 ?
             IconButton(
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil('shoppingCart', (Route<dynamic> route) => false);
@@ -76,7 +102,7 @@ class TopBar extends StatelessWidget {
                           minHeight: 12,
                         ),
                         child: new Text(
-                          viewModel.productsCount.toString(),
+                          widget.numberOfProducts.toString(),
                           style: new TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -89,13 +115,13 @@ class TopBar extends StatelessWidget {
                 )
             ) : Container(),
 
-            IconButton(
-              onPressed: () {
-                _exitApp();
-              },
-
-              icon: Icon(Icons.exit_to_app, color: Colors.black, size: 28),
-            )
+//            IconButton(
+//              onPressed: () {
+//                _exitApp();
+//              },
+//
+//              icon: Icon(Icons.exit_to_app, color: Colors.black, size: 28),
+//            )
           ],
         );
       },

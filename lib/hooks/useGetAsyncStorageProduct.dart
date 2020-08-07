@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class useGetAsyncStorageProduct with ChangeNotifier {
+class useGetAsyncStorageProduct with ChangeNotifier  {
   final storage = new FlutterSecureStorage();
   int productsCount = 0;
 
@@ -11,19 +11,43 @@ class useGetAsyncStorageProduct with ChangeNotifier {
     return allValues['car'];
   }
 
+  Future<int> getNumberProducts() async {
+    final storage = new FlutterSecureStorage();
+    int temp = 0;
+    Map<String, String> allValues = await storage.readAll();
+//    print('carrito');
+//    print(allValues['car']);
+    if(allValues['car'] != null) {
+      var aux = jsonDecode(allValues['car']);
+      for(int x = 0; x < aux.length; x++){
+        temp = temp + aux[x]['quantity'];
+      }
+    }
+    productsCount = temp;
+//    print('aaaaaaaaaa $productsCount');
+    return temp;
+  }
+
   addOrRemoveProductInAsyncStorage(type, id) async {
     var response = await getCar();
     var aux = response != null ? jsonDecode(response) : [];
+    int numberProduct = await getNumberProducts();
+
+//    print('entrooooooo $numberProduct');
 
     for (var i = 0; i < aux.length; ++i) {
       if(aux[i]['_id'] == id) {
         if(type == 'delete') {
           aux[i]['quantity'] = aux[i]['quantity'] - 1;
-          productsCount = productsCount -1;
+
+//          productsCount = productsCount -1; esto funciona
+          productsCount = numberProduct - 1;
           notifyListeners();
         }else{
           aux[i]['quantity'] = aux[i]['quantity'] + 1;
-          productsCount = productsCount +1;
+//          productsCount = productsCount +1; esto funciona
+          productsCount = numberProduct + 1;
+//          print('despues d eto $productsCount');
           notifyListeners();
         }
       }
@@ -48,6 +72,7 @@ class useGetAsyncStorageProduct with ChangeNotifier {
   Future<bool> setCartInAsyncStorage(value) async {
     var response = await getCar();
     var cart = response != null ? jsonDecode(response) : [];
+    int numberProduct = await getNumberProducts();
     try {
       if(cart.length == 0) {
         await storage.write(key: 'car', value: jsonEncode([value]));
@@ -61,7 +86,8 @@ class useGetAsyncStorageProduct with ChangeNotifier {
           notifyListeners();
         }else {
           await storage.write(key: 'car', value: jsonEncode([...cart, value]));
-          productsCount = productsCount + 1;
+//          productsCount = productsCount + 1; esto funciona
+          productsCount = numberProduct + 1;
           notifyListeners();
         }
       }

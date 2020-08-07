@@ -23,39 +23,47 @@ class _ItemCardState extends State<ItemCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.press,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: redColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Hero(
-                tag: "${widget.product['_id']}",
-                child: Image.asset(
-                  'assets/images/bag_2.png',
-                   fit: BoxFit.fill,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        child: Container(
+          height: 160,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: Container(
+                  height: 150,
+                  child: Image.asset(
+                    'assets/images/campana.png',
+                    fit: BoxFit.cover,
+                  ),
                 ),
-//                child: Image.network(widget.product['pictures'][0]),
               ),
-            ),
+
+              Expanded(
+                flex: 7,
+                child: Container(
+                  height: 150,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(widget.product['name'], maxLines: 1, style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text("\$ ${widget.product['price'].toString()}"),
+                        Text('Counted'),
+                        widget.product['priceOnCredit'] != null ? Text("\$ ${widget.product['priceOnCredit'].toString()}") : null,
+                        widget.product['priceOnCredit'] != null ? Text('Credit') : null,
+                        widget.product['creditInstallmentMessage'] != null ? Text(widget.product['creditInstallmentMessage']) : null
+                      ],
+                    ),
+                  )
+                )
+              )
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20 / 3),
-            child: Text(
-              widget.product['name'],
-              style: TextStyle(color: Colors.grey),
-              maxLines: 1,
-            ),
-          ),
-          Text(
-            "\$${widget.product['price']}",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          )
-        ],
+        ),
       ),
     );
   }

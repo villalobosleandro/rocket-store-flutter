@@ -161,15 +161,15 @@ class _LoginState extends State<Login> {
 
                         ConstrainedBox(
                           constraints: BoxConstraints(
-                              maxWidth: 350,
-                              minWidth: 350
+                              maxWidth: size.width,
+                              minWidth: size.width
                           ),
                           child: Form(
                             key: _formKey,
                             child: Column(
                               children: <Widget>[
                                 Container(
-                                  width: size.width - 50,
+                                  width: size.width - 30,
                                   child: TextFormField(
                                     textCapitalization: TextCapitalization.none,
                                     onChanged: (value) => _email = value,
@@ -193,7 +193,7 @@ class _LoginState extends State<Login> {
                                 SizedBox(height: responsive.hp(3)),
 
                                 Container(
-                                  width: size.width - 50,
+                                  width: size.width - 30,
                                   child: TextFormField(
                                     textCapitalization: TextCapitalization.none,
                                     onChanged: (value) => _password = value,

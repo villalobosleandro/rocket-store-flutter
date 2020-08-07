@@ -1,9 +1,7 @@
-import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:rocket_store_flutter/utils/dialogs.dart';
 
 import './../../components/Product.dart';
 import './../../components/item_card.dart';
@@ -12,6 +10,9 @@ import './../../utils/app_config.dart';
 import './../../api/auth_api.dart';
 import './../../components/topBar.dart';
 import './../../hooks/useGetAsyncStorageProduct.dart';
+import './../../components/menuDrawer/menuDrawer.dart';
+import './../../utils/dialogs.dart';
+
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,40 +21,121 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isFetching = true;
+  bool consultCampaing = true;
+  bool consultCategories = true;
+  List<dynamic> itemProducts = List<Product>();
+  int numberOfProducts = 0;
   final _api = AuthApi();
   final hook = useGetAsyncStorageProduct();
-  List<dynamic> itemProducts = List<Product>();
-  int numberOfProductsInCart = 0;
+  dynamic campaing = {};
+  dynamic categories = [];
 
   @override
   void initState() {
     super.initState();
+    this._getActiveCampaing();
+    this._getCategories();
     this._getProducts();
-//    this.getNumberProducts();
+    this.numberProducts();
   }
 
-//  getNumberProducts() async {
-//    final storage = new FlutterSecureStorage();
-//    Map<String, String> allValues = await storage.readAll();
-//    print('carrito');
-//    print(allValues['car']);
-//    if(allValues['car'] != null) {
-//      var aux = jsonDecode(allValues['car']);
-//      for(int x = 0; x < aux.length; x++){
-//        numberOfProductsInCart = numberOfProductsInCart + aux[x]['quantity'];
-//      }
-//    }
-//
-//    print('++++++++++++++++');
-//    print(numberOfProductsInCart);
-//  }
+  _getActiveCampaing() async {
+    try{
+      final token = await _api.getAccessToken();
+      var query = [{
+        'extraData': token['token']
+      }];
+
+      final res = await _api.callMethod(context, ApiRoutes.storeCampaign, query);
+//      print('campaing => ');
+//      print(res);
+      setState(() {
+        campaing = res;
+        consultCampaing = false;
+      });
+    }on PlatformException catch(e) {
+      setState(() {
+        consultCampaing = false;
+      });
+    }
+  }
+
+  _getCategories() async {
+    try{
+      final token = await _api.getAccessToken();
+      var query = [{
+        'extraData': token['token']
+      }];
+
+      final res = await _api.callMethod(context, ApiRoutes.listCategories, query);
+//      print('caregorias => ');
+//      print(res);
+
+      setState(() {
+        categories = res;
+        consultCategories = false;
+      });
+    }on PlatformException catch(e) {
+      setState(() {
+        consultCategories = false;
+      });
+    }
+  }
+
+  numberProducts() async {
+    numberOfProducts = await hook.getNumberProducts();
+//    print('=========== $numberOfProductsInCart');
+
+  }
 
   _getProducts() async {
     try {
-      final products = await _api.callMethod(context, ApiRoutes.productsList);
-      if(products != []) {
+      final token = await _api.getAccessToken();
+      var query = [{
+        'filters': {
+          'categoryId': ''
+        },
+        'options': {},
+        'extraData': token['token']
+      }];
+      final products = await _api.callMethod(context, ApiRoutes.productsList, query);
+//      print('products => ');
+//      print(products);
+      if(products['data']['products'] != []) {
         setState(() {
-          itemProducts = products;
+          itemProducts = products['data']['products'];
+          isFetching = false;
+        });
+      }
+      setState(() {
+        isFetching = false;
+      });
+    } on PlatformException catch(e) {
+      setState(() {
+        isFetching = false;
+      });
+      Dialogs.alert(context, title: 'Error', message: 'Conection error');
+    }
+  }
+
+  _filterWithCategories(categoryId) async {
+//    print('categoryId => $categoryId');
+    setState(() {
+      isFetching = true;
+    });
+    try {
+      final token = await _api.getAccessToken();
+      var query = [{
+        'filters': {
+          'categoryId': categoryId
+        },
+        'options': {},
+        'extraData': token['token']
+      }];
+      final products = await _api.callMethod(context, ApiRoutes.productsList, query);
+      if(products['data']['products'] != []) {
+        setState(() {
+          itemProducts = products['data']['products'];
           isFetching = false;
         });
       }
@@ -74,11 +156,13 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         elevation: 0,
         flexibleSpace: TopBar(
-//          hideBackButton: true,
-//          number: numberOfProductsInCart,
+          hideBackButton: true,
+          title: 'DASHBOARD',
+          numberOfProducts: numberOfProducts
         ),
       ),
-      body: isFetching ? Container(
+      drawer: MenuDrawer(),
+      body: (consultCampaing ) ? Container(
         child: Center(
           child: CupertinoActivityIndicator(radius: 15),
         ),
@@ -87,38 +171,124 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody() {
-    if(itemProducts.length > 0) {
-      return Column(
-        children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: GridView.builder(
-                  itemCount: itemProducts.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 20,
-                    childAspectRatio: 0.75,
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+            children: <Widget>[
+              _buildCampaing(),
+              _buildCategories(),
+              _buildProducts()
+            ]
+        )
+      ),
+    );
+  }
+
+  Widget _buildCategories() {
+    return Container(
+      height: 100,
+      child: (
+          ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              var iconType;
+              switch(categories[index]['filter']) {
+                case 'TEC': {
+                  iconType = Icons.devices_other;
+                }
+                break;
+
+                case 'VIDEOJUEGOS': {
+                  iconType = Icons.games;
+                }
+                break;
+
+                case 'DEPORTE': {
+                  iconType = Icons.rowing;
+                }
+                break;
+
+                case 'MOTOS': {
+                  iconType = Icons.motorcycle;
+                }
+                break;
+
+                case 'FLORES': {
+                  iconType = Icons.local_florist;
+                }
+                break;
+
+                default: {
+                  iconType = Icons.adjust;
+                }
+                break;
+              }
+              return InkWell(
+                onTap: (){
+                  _filterWithCategories(categories[index]['_id']);
+                },
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Icon(iconType),
+                      Text(categories[index]['name'], maxLines: 1)
+                    ],
                   ),
-                  itemBuilder: (context, index) => ItemCard(
-                    product: itemProducts[index],
-                    press: () {
-                      Navigator.pushAndRemoveUntil(context,
-                          MaterialPageRoute(builder: (context) => DetailsScreen(
-                              product : itemProducts[index])),
-                              (route) => false
-                      );
-                    },
-                  )),
-            ),
+                ),
+              );
+            }
+          )
+      ),
+    );
+  }
+
+  Widget _buildCampaing() {
+//    print('1111111111111111');
+//    print(campaing);
+    if(campaing['data'] != null) {
+//      print('entro al if');
+      final size = MediaQuery.of(context).size;
+      return Container(
+        height: 120,
+        width: size.width - 20,
+//        child: Image.network(campaing['data']['imageUrl'], fit: BoxFit.cover),
+      child: Image.asset(
+        'assets/images/campana.png',
+        fit: BoxFit.cover,
+      ),
+      );
+    }else {
+      return Container();
+    }
+  }
+
+  Widget _buildProducts() {
+    if(itemProducts.length > 0) {
+      return Expanded(
+        child: ListView.builder(
+          itemCount: itemProducts.length,
+          itemBuilder: (context, index) => ItemCard(
+            product: itemProducts[index],
+            press: () {
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (context) => DetailsScreen(
+                      product : itemProducts[index])),
+                      (route) => false
+              );
+            },
           ),
-        ],
+        ),
       );
     }else {
       return Center(
         child: Text('No hay productos'),
       );
     }
+
   }
 }

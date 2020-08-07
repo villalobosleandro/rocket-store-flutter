@@ -45,27 +45,25 @@ class AuthApi {
       }
       return false;
     }catch(error){
+//      print('error => $error');
       Dialogs.alert(context, title: 'Error!', message: 'Sorry the email or password is invalid.');
       return false;
     }
 
   }
 
-  Future callMethod(BuildContext context, String method, {Object data}) async {
-    final token = await getAccessToken();
-    data = [{
-      'options': {},
-      'extraData': token['token']
-    }];
+  Future callMethod(BuildContext context, String method, Object data) async {
+//    print('method => $method');
+//    print('data => $data');
     try{
       final response = await Meteor.call(method, data);
-      //print('aaaaaaaaaaaaaaa');
-      //print(response['data']['products']);
+//      print('el response => $response');
       if(response != null) {
-        return response['data']['products'];
+        return response;
       }
       return [];
-    }catch(error){
+    }on PlatformException catch(error){
+//      print('el error => $error');
       return [];
     }
 
