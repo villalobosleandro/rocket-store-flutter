@@ -81,7 +81,7 @@ class _TopBarState extends State<TopBar> {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
           actions: <Widget>[
-            widget.numberOfProducts != 0 ?
+            viewModel.productsCount != 0 ?
             IconButton(
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil('shoppingCart', (Route<dynamic> route) => false);
@@ -102,7 +102,7 @@ class _TopBarState extends State<TopBar> {
                           minHeight: 12,
                         ),
                         child: new Text(
-                          widget.numberOfProducts.toString(),
+                          viewModel.productsCount.toString(),
                           style: new TextStyle(
                             color: Colors.white,
                             fontSize: 12,

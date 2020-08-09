@@ -40,13 +40,13 @@ class useGetAsyncStorageProduct with ChangeNotifier  {
         if(type == 'delete') {
           aux[i]['quantity'] = aux[i]['quantity'] - 1;
 
-//          productsCount = productsCount -1; esto funciona
-          productsCount = numberProduct - 1;
+          productsCount = productsCount -1;
+//          productsCount = numberProduct - 1;
           notifyListeners();
         }else{
           aux[i]['quantity'] = aux[i]['quantity'] + 1;
-//          productsCount = productsCount +1; esto funciona
-          productsCount = numberProduct + 1;
+          productsCount = productsCount +1;
+//          productsCount = numberProduct + 1;
 //          print('despues d eto $productsCount');
           notifyListeners();
         }
@@ -86,8 +86,8 @@ class useGetAsyncStorageProduct with ChangeNotifier  {
           notifyListeners();
         }else {
           await storage.write(key: 'car', value: jsonEncode([...cart, value]));
-//          productsCount = productsCount + 1; esto funciona
-          productsCount = numberProduct + 1;
+          productsCount = productsCount + 1;
+//          productsCount = numberProduct + 1;
           notifyListeners();
         }
       }

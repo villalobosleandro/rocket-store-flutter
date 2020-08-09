@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,19 +36,21 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   bool consultQuestions = true;
   TabController tabController;
   final _api = AuthApi();
-  dynamic invoiceDetail = [];
+  dynamic productDetail = [];
   dynamic comments = [];
   dynamic questions = [];
   String showOptions = 'add';
   double ratting = 0;
   var descripcion = '';
+  String commentId = '';
+  var question = '';
 
   @override
   void initState() {
     this.hook = Provider.of<useGetAsyncStorageProduct>(context, listen: false);
     tabController = TabController(length: 3, vsync: this);
 //    this.numberProducts();
-    this._getInvoiceDetail();
+    this._getProductDetail();
     this._getQuestionsAndAnswer();
     super.initState();
   }
@@ -61,13 +62,13 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   }
 
   _getQuestionsAndAnswer() async  {
+//    print(widget.product);
     try {
       var query = [{
-        'productId': widget.product['_id'],
+        'storeProductId': widget.product['_id'],
         'typeId': 'question'
       }];
       final res = await _api.callMethod(context, ApiRoutes.listQuestions, query);
-//      print('ressss => $res');
       if(res['data'] != null) {
         setState(() {
           questions = res['data'];
@@ -82,20 +83,24 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     }
   }
 
-  _getInvoiceDetail() async {
+  _getProductDetail() async {
     try {
       final token = await _api.getAccessToken();
       var query = [{
-        'filters': {},
-        'options': {},
+        '_id': widget.product['_id'],
         'extraData': token['token']
       }];
-      final res = await _api.callMethod(context, ApiRoutes.productsList, query);
-//      print('ressss => $res');
-      if(res['data'].length > 0) {
+      final res = await _api.callMethod(context, ApiRoutes.storeProductGet, query);
+      if(res.length > 0) {
+        var temp = [];
+        for (var i = 0; i < res['comments'].length; ++i) {
+          if(res['comments'][i]['isRemove'] == false) {
+            temp.add(res['comments'][i]);
+          }
+        }
         setState(() {
-          invoiceDetail = res['data']['products'][0];
-          comments = res['data']['products'][0]['comments'];
+          productDetail = res;
+          comments = temp;
           isFetching = false;
         });
 
@@ -133,7 +138,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     final response = await hook.setCartInAsyncStorage(element);
     if(response) {
       FlutterToast.showToast(
-          msg: 'agregado al carrito',
+          msg: 'Added to cart',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -143,7 +148,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
       );
     }else{
       FlutterToast.showToast(
-          msg: 'error vuelve a intentar',
+          msg: 'Error try again',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -165,12 +170,13 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         //busco todos los comentarios del usuario que no esten eliminados
 //        print(comments[i]);
         if(comments[i]['user']['_id'] == aux['userId'] && comments[i]['isRemove'] == false) {
-          print(comments[i]['rating']);
-          print(comments[i]['comment']);
+//          print(comments[i]);
+//          print(comments[i]['comment']);
           setState(() {
             showOptions = 'edirtOrRemove';
             ratting = comments[i]['rating'].toDouble();
             descripcion = comments[i]['comment'];
+            commentId = comments[i]['_id'];
           });
         }
 
@@ -182,30 +188,18 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     }
   }
 
-  _addOrEditComment(context) {
-    showModalBottomSheet(context: context, builder: (BuildContext bc){
-      return Container(
-        height: MediaQuery.of(context).size.height * .60,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Column(
+  _addOrEditCommentModal(context) {
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+          title: Text('What do you think about this?'),
+          content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(Icons.close, size: 20),
-                  )
-                ],
-              ),
 
               Text('Rate this product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
 
+              //ratting
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: RatingBar(
@@ -213,7 +207,11 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                   direction: Axis.horizontal,
                   allowHalfRating: true,
                   itemCount: 5,
-                  ignoreGestures: true,
+                  onRatingUpdate: (rating) {
+                    setState(() {
+                      ratting = rating;
+                    });
+                  },
                   itemBuilder: (context, _) => Icon(
                     Icons.star,
                     color: Colors.amber,
@@ -221,11 +219,13 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                 ),
               ),
 
+              //texto
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text('Describe your experience (optional)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               ),
 
+              //textfromfield
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: TextFormField(
@@ -235,19 +235,241 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   textAlign: TextAlign.start,
-                  style: const TextStyle(
-                    color: Colors.red,
-                  ),
                 ),
               ),
-
-
             ],
           ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                setState(() {
+                  descripcion = '';
+                  ratting = 0;
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel', style: TextStyle(
+                  color: Colors.red
+              )
+              ),
+              shape: RoundedRectangleBorder(side: BorderSide(
+                  color: Colors.red,
+                  width: 1,
+                  style: BorderStyle.solid
+              ), borderRadius: BorderRadius.circular(5)),
+            ),
 
-        ),
-      );
+            FlatButton(
+              onPressed: () {
+                this._insertOrEditComment();
+                Navigator.of(context).pop();
+              },
+              child: Text('Save', style: TextStyle(
+                  color: Colors.green
+              )
+              ),
+              shape: RoundedRectangleBorder(side: BorderSide(
+                  color: Colors.green,
+                  width: 1,
+                  style: BorderStyle.solid
+              ), borderRadius: BorderRadius.circular(5)),
+            )
+          ],
+        )
+    );
+  }
+
+  _modalQuestion(context) {
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+          title: Text('Write your question'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+
+              //textfromfield
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: TextFormField(
+                  textCapitalization: TextCapitalization.none,
+                  initialValue: question,
+                  onChanged: (value) => question = value,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  textAlign: TextAlign.start,
+//                  style: const TextStyle(
+//                    color: Colors.red,
+//                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                setState(() {
+                  question = '';
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel', style: TextStyle(
+                  color: Colors.red
+              )
+              ),
+              shape: RoundedRectangleBorder(side: BorderSide(
+                  color: Colors.red,
+                  width: 1,
+                  style: BorderStyle.solid
+              ), borderRadius: BorderRadius.circular(5)),
+            ),
+
+            FlatButton(
+              onPressed: () {
+                this._insertQuestion();
+                Navigator.of(context).pop();
+              },
+              child: Text('Save', style: TextStyle(
+                  color: Colors.green
+              )
+              ),
+              shape: RoundedRectangleBorder(side: BorderSide(
+                  color: Colors.green,
+                  width: 1,
+                  style: BorderStyle.solid
+              ), borderRadius: BorderRadius.circular(5)),
+            )
+          ],
+        )
+    );
+  }
+
+  _insertQuestion() async {
+    setState(() {
+      consultQuestions = true;
     });
+
+    try {
+      final token = await _api.getAccessToken();
+      dynamic data = [{
+        'storeProductId': productDetail['_id'],
+        'userId': token['userId'],
+        'typeId': 'question',
+        'message': question,
+        'extraData': token['token']
+      }];
+
+      final res = await _api.callMethod(context, ApiRoutes.storeProductQuestionInsert, data);
+//      print('=========== $res');
+      if(res['success'] == true) {
+        setState(() {
+          question = '';
+        });
+        this._getQuestionsAndAnswer();
+      }
+    } on PlatformException catch(e) {
+      setState(() {
+        consultQuestions = false;
+      });
+      Dialogs.alert(context, title: 'Error', message: 'Error try again');
+    }
+  }
+
+  _insertOrEditComment() async {
+    setState(() {
+      isFetching = true;
+    });
+
+    try {
+      final token = await _api.getAccessToken();
+      dynamic data = [{
+        '_id': productDetail['_id'],
+        'rating': ratting,
+        'comment': descripcion,
+        'extraData': token['token']
+      }];
+      final res = await _api.callMethod(context, ApiRoutes.upSertRatingComment, data);
+      if(res['success'] == true) {
+        setState(() {
+          ratting = 0;
+          descripcion = '';
+        });
+        this._getProductDetail();
+      }
+    } on PlatformException catch(e) {
+      setState(() {
+        isFetching = false;
+      });
+      Dialogs.alert(context, title: 'Error', message: 'Error try again');
+    }
+  }
+
+  _removeComment() async {
+    setState(() {
+      isFetching = true;
+    });
+    try {
+      final token = await _api.getAccessToken();
+      dynamic data = [{
+        '_id': productDetail['_id'],
+        'commentId': commentId,
+        'extraData': token['token']
+      }];
+      final res = await _api.callMethod(context, ApiRoutes.storeRemoveComment, data);
+      if(res['success'] == true) {
+        setState(() {
+          ratting = 0;
+          descripcion = '';
+        });
+        this._getProductDetail();
+      }
+    } on PlatformException catch(e) {
+      setState(() {
+        isFetching = false;
+      });
+      Dialogs.alert(context, title: 'Error', message: 'Error try again');
+    }
+  }
+
+  _showDeleteCommentDialog() {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text("Alert!!!"),
+          content: Text("Are you sure to delete your comment?"),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel', style: TextStyle(
+                  color: Colors.red
+              )
+              ),
+              shape: RoundedRectangleBorder(side: BorderSide(
+                  color: Colors.red,
+                  width: 1,
+                  style: BorderStyle.solid
+              ), borderRadius: BorderRadius.circular(5)),
+            ),
+
+            FlatButton(
+              onPressed: () {
+                this._removeComment();
+                Navigator.of(context).pop();
+              },
+              child: Text('OK', style: TextStyle(
+                  color: Colors.green
+              )
+              ),
+              shape: RoundedRectangleBorder(side: BorderSide(
+                  color: Colors.green,
+                  width: 1,
+                  style: BorderStyle.solid
+              ), borderRadius: BorderRadius.circular(5)),
+            )
+          ],
+        ));
   }
 
   @override
@@ -257,7 +479,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
       appBar: AppBar(
         elevation: 0,
         flexibleSpace: TopBar(
-//          routeName: 'home',
             title: 'DETAILS',
             numberOfProducts: numberOfProducts
         ),
@@ -312,7 +533,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                           children: <Widget>[
                             Flexible(
                               flex: 1,
-                              child: Text(invoiceDetail['name'], textAlign: TextAlign.justify),
+                              child: Text(productDetail['name'], textAlign: TextAlign.justify),
                             )
                           ],
                         )
@@ -320,7 +541,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     Expanded(
                       flex: 1,
                       child: RatingBar(
-                        initialRating: invoiceDetail['rating'].toDouble(),
+                        initialRating: productDetail['rating'].toDouble(),
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
@@ -382,7 +603,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('price on credit'.toUpperCase()),
-                      Text("\$ " + invoiceDetail['priceOnCredit'].toString()),
+                      Text("\$ " + productDetail['priceOnCredit'].toString()),
                     ],
                   ),
                 ),
@@ -392,7 +613,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('counted price'.toUpperCase()),
-                      Text("\$ " + invoiceDetail['price'].toString())
+                      Text("\$ " + productDetail['price'].toString())
                     ],
                   ),
                 )
@@ -431,14 +652,32 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     );
   }
 
+  Widget floatingButtons() {
+    return Positioned(
+      bottom: 10,
+      right: 10,
+      child: AnimatedFloatingActionButton(
+          fabButtons: <Widget> [
+            editComment(),
+            deleteComment()
+          ],
+          colorStartAnimation: Colors.red,
+          colorEndAnimation: Colors.red,
+          animatedIconData: AnimatedIcons.menu_close //To principal button
+      ),
+    );
+  }
+
   Widget getTabBarPages() {
     return TabBarView(controller: tabController, children: <Widget>[
       //descripcion
       Container(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          child: SingleChildScrollView(
-              child: Text(invoiceDetail['description'], textAlign: TextAlign.justify)
+          child: productDetail['description'] != '' ? SingleChildScrollView(
+              child: Text(productDetail['description'], textAlign: TextAlign.justify)
+          ) : Center(
+            child: Text('No descriptions'),
           ),
         ),
       ),
@@ -447,58 +686,50 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
       Container(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Stack(
+            child: comments.length > 0 ? Stack(
               children: <Widget>[
                 ListView.builder(
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
-//                      print('===========================');
-//                      print(comments[index]);
-                      if(comments[index]['isRemove'] == false) {
-                        return Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(comments[index]['user']['name'], style: TextStyle(fontWeight: FontWeight.bold),  textAlign: TextAlign.justify),
-                                RatingBar(
-                                  initialRating: comments[index]['rating'].toDouble(),
-                                  direction: Axis.horizontal,
-                                  itemSize: 20,
-                                  allowHalfRating: true,
-                                  itemCount: 5,
-                                  ignoreGestures: true,
-                                  itemBuilder: (context, _) => Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
+                      return Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(comments[index]['user']['name'], style: TextStyle(fontWeight: FontWeight.bold),  textAlign: TextAlign.justify),
+                              RatingBar(
+                                initialRating: comments[index]['rating'].toDouble(),
+                                direction: Axis.horizontal,
+                                itemSize: 20,
+                                allowHalfRating: true,
+                                itemCount: 5,
+                                ignoreGestures: true,
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
                                 ),
-                                Text(Moment(comments[index]['updateAt']).format('yyyy-MM-dd')),
-                                Text(comments[index]['comment']),
-                              ],
-                            ),
+                              ),
+                              Text(Moment(comments[index]['updateAt']).format('yyyy-MM-dd')),
+                              Text(comments[index]['comment']),
+                            ],
                           ),
-                        );
-                      } else {
-                        return Container();
-                      }
+                        ),
+                      );
                     }
                 ),
 
+                floatingButtons()
+              ],
+            ) : Stack(
+              children: <Widget>[
+                Center(
+                  child: Text('No comments to show'),
+                ),
                 Positioned(
-                  bottom: 10,
                   right: 10,
-                  child: AnimatedFloatingActionButton(
-                      fabButtons: <Widget>[
-                        showOptions == 'add' ? addComment() : null,
-                        showOptions != 'add' ? editComment() : null,
-                        showOptions != 'add' ? deleteComment(): null
-                      ],
-                      colorStartAnimation: Colors.red,
-                      colorEndAnimation: Colors.red,
-                      animatedIconData: AnimatedIcons.menu_close //To principal button
-                  ),
+                  bottom: 10,
+                  child: addComment(),
                 )
               ],
             )
@@ -507,46 +738,62 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
 
       //preguntas
       Container(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-            itemCount: questions.length,
-            itemBuilder: (context, index) {
-//              print('====================');
-//              print(questions[index]);
-              return Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-//                        crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: questions.length > 0 ? ListView.builder(
+                itemCount: questions.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Icon(Icons.chat_bubble, color: Colors.grey),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: Text(questions[index]['message'], textAlign: TextAlign.justify, style: TextStyle(fontWeight: FontWeight.bold)),
-                          )
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.chat_bubble, color: Colors.grey),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text(questions[index]['message'], textAlign: TextAlign.justify, style: TextStyle(fontWeight: FontWeight.bold)),
+                              )
+                            ],
+                          ),
+
+                          questions[index]['answer'] != null ? Row(
+                            children: <Widget>[
+                              Icon(Icons.chat, color: Colors.grey),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text(questions[index]['answer']['message'], textAlign: TextAlign.justify),
+                              )
+                            ],
+                          ): Container()
                         ],
                       ),
+                    ),
+                  );
+                },
+              )
+                  : Center(
+                child: Text('No questions'),
+              ),
+            ),
 
-                      questions[index]['answer'] != null ? Row(
-                        children: <Widget>[
-                          Icon(Icons.chat, color: Colors.grey),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: Text(questions[index]['answer']['message'], textAlign: TextAlign.justify),
-                          )
-                        ],
-                      ): null
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+            Positioned(
+              right: 10,
+              bottom: 10,
+              child: FloatingActionButton(
+                backgroundColor: Colors.red,
+                onPressed: (){
+                  this._modalQuestion(context);
+                },
+                child: Icon(Icons.add),
+              ),
+            )
+          ],
+        )
       )
     ]);
   }
@@ -554,7 +801,10 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget addComment() {
     return Container(
       child: FloatingActionButton(
-        onPressed: null,
+        backgroundColor: Colors.red,
+        onPressed: (){
+          this._addOrEditCommentModal(context);
+        },
         tooltip: 'Add Comment',
         child: Icon(Icons.add),
       ),
@@ -564,9 +814,9 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget editComment() {
     return Container(
       child: FloatingActionButton(
+        backgroundColor: Colors.red,
         onPressed: (){
-          print('lcick en edit');
-          this._addOrEditComment(context);
+          this._addOrEditCommentModal(context);
         },
         tooltip: 'Edit Comment',
         child: Icon(Icons.edit),
@@ -577,7 +827,10 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget deleteComment() {
     return Container(
       child: FloatingActionButton(
-        onPressed: null,
+        backgroundColor: Colors.red,
+        onPressed: () {
+          this._showDeleteCommentDialog();
+        },
         tooltip: 'Delete comment',
         child: Icon(Icons.delete_outline),
       ),
