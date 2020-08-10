@@ -81,7 +81,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
 
                       InkWell(
                         onTap: () {
-//                          Navigator.of(context).pushNamedAndRemoveUntil('MovementsHistory', (Route<dynamic> route) => false);
+                          Navigator.of(context).pushNamedAndRemoveUntil('listInvoices', (Route<dynamic> route) => false);
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 18.0),

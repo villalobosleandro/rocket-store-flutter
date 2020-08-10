@@ -20,15 +20,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isFetching = true;
-  bool consultCampaing = true;
-  bool consultCategories = true;
+  bool isFetching = true, consultCampaing = true, consultCategories = true;
+
   List<dynamic> itemProducts = List<Product>();
   int numberOfProducts = 0;
-  final _api = AuthApi();
-  final hook = useGetAsyncStorageProduct();
-  dynamic campaing = {};
-  dynamic categories = [];
+  final _api = AuthApi(), hook = useGetAsyncStorageProduct();
+  dynamic campaing = {}, categories = [];
 
   @override
   void initState() {
@@ -248,19 +245,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCampaing() {
-//    print('1111111111111111');
-//    print(campaing);
-    if(campaing['data'] != null) {
-//      print('entro al if');
+    if(campaing['data']['imageUrl'] != null) {
       final size = MediaQuery.of(context).size;
       return Container(
         height: 120,
         width: size.width - 20,
-//        child: Image.network(campaing['data']['imageUrl'], fit: BoxFit.cover),
-      child: Image.asset(
-        'assets/images/campana.png',
-        fit: BoxFit.cover,
-      ),
+          child: FadeInImage(
+            fit: BoxFit.cover,
+            placeholder: AssetImage('assets/images/loading.gif'),
+            image: NetworkImage(campaing['data']['imageUrl']),
+          ),
       );
     }else {
       return Container();

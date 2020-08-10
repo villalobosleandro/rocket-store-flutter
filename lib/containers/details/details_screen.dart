@@ -32,18 +32,13 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProviderStateMixin {
   useGetAsyncStorageProduct hook;
   int numberOfProducts = 0;
-  bool isFetching = true;
-  bool consultQuestions = true;
+  bool isFetching = true, consultQuestions = true;
   TabController tabController;
   final _api = AuthApi();
-  dynamic productDetail = [];
-  dynamic comments = [];
-  dynamic questions = [];
-  String showOptions = 'add';
+  dynamic productDetail = [], comments = [], questions = [];
+  var descripcion = '', question = '';
+  String showOptions = 'add', commentId = '';
   double ratting = 0;
-  var descripcion = '';
-  String commentId = '';
-  var question = '';
 
   @override
   void initState() {
@@ -62,7 +57,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   }
 
   _getQuestionsAndAnswer() async  {
-//    print(widget.product);
     try {
       var query = [{
         'storeProductId': widget.product['_id'],
@@ -138,17 +132,17 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     final response = await hook.setCartInAsyncStorage(element);
     if(response) {
       FlutterToast.showToast(
-          msg: 'Added to cart',
+          msg: 'Added to cart'.toUpperCase(),
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0
       );
     }else{
       FlutterToast.showToast(
-          msg: 'Error try again',
+          msg: 'Error try again'.toUpperCase(),
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -160,7 +154,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   }
 
   _initOptions() async {
-    final storage = new FlutterSecureStorage();
+    final storage = FlutterSecureStorage();
     Map<String, String> allValues = await storage.readAll();
     var aux = jsonDecode(allValues['SESSION']);
     dynamic temp;
@@ -168,10 +162,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     if(comments.length > 0) {
       for (var i = 0; i < comments.length; ++i) {
         //busco todos los comentarios del usuario que no esten eliminados
-//        print(comments[i]);
         if(comments[i]['user']['_id'] == aux['userId'] && comments[i]['isRemove'] == false) {
-//          print(comments[i]);
-//          print(comments[i]['comment']);
           setState(() {
             showOptions = 'edirtOrRemove';
             ratting = comments[i]['rating'].toDouble();
@@ -181,17 +172,13 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         }
 
       }
-
-//      print(band);
-//      temp = aux.where((item) => (item['user']['_id'] == aux['userId'] && item['isRemove'] == false)).toList();
-//      print('temp => $temp');
     }
   }
 
   _addOrEditCommentModal(context) {
     showDialog(
         context: context,
-        builder: (_) => new AlertDialog(
+        builder: (_) => AlertDialog(
           title: Text('What do you think about this?'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,7 +269,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   _modalQuestion(context) {
     showDialog(
         context: context,
-        builder: (_) => new AlertDialog(
+        builder: (_) => AlertDialog(
           title: Text('Write your question'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,7 +347,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
       }];
 
       final res = await _api.callMethod(context, ApiRoutes.storeProductQuestionInsert, data);
-//      print('=========== $res');
       if(res['success'] == true) {
         setState(() {
           question = '';
@@ -474,7 +460,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -508,9 +493,10 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     child: Swiper(
                       autoplay: true,
                       itemBuilder: (BuildContext context, int index) {
-                        return new Image.asset(
-                          "assets/images/bag_2.png",
+                        return FadeInImage(
                           fit: BoxFit.cover,
+                          placeholder: AssetImage('assets/images/loading.gif'),
+                          image: NetworkImage(productDetail['pictures'][0]),
                         );
                       },
                       itemCount: 3,

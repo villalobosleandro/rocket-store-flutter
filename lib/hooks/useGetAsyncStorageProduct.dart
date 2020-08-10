@@ -11,7 +11,7 @@ class useGetAsyncStorageProduct with ChangeNotifier  {
     return allValues['car'];
   }
 
-  Future<int> getNumberProducts() async {
+  getNumberProducts() async {
     final storage = new FlutterSecureStorage();
     int temp = 0;
     Map<String, String> allValues = await storage.readAll();
@@ -31,7 +31,7 @@ class useGetAsyncStorageProduct with ChangeNotifier  {
   addOrRemoveProductInAsyncStorage(type, id) async {
     var response = await getCar();
     var aux = response != null ? jsonDecode(response) : [];
-    int numberProduct = await getNumberProducts();
+//    int numberProduct = await getNumberProducts();
 
 //    print('entrooooooo $numberProduct');
 
@@ -42,18 +42,19 @@ class useGetAsyncStorageProduct with ChangeNotifier  {
 
           productsCount = productsCount -1;
 //          productsCount = numberProduct - 1;
-          notifyListeners();
+//          notifyListeners();
         }else{
           aux[i]['quantity'] = aux[i]['quantity'] + 1;
           productsCount = productsCount +1;
 //          productsCount = numberProduct + 1;
 //          print('despues d eto $productsCount');
-          notifyListeners();
+//          notifyListeners();
         }
       }
     }
 
     aux = aux.where((item) => item['quantity'] != 0).toList();
+//    print('el carrito $aux');
     await storage.write(key: 'car', value: jsonEncode(aux));
     notifyListeners();
   }
@@ -101,14 +102,16 @@ class useGetAsyncStorageProduct with ChangeNotifier  {
 
   deleteCart() async {
     await storage.write(key: 'car', value: jsonEncode([]));
+    productsCount = 0;
     notifyListeners();
   }
 
-  deleteElementCart(id) async {
+  deleteElementCart(id, quantity) async {
     var response = await getCar();
     var cart = response != null ? jsonDecode(response) : [];
     var aux = cart.where((item) => item['_id'] != id).toList();
     await storage.write(key: 'car', value: jsonEncode(aux));
+    productsCount = productsCount - quantity;
     notifyListeners();
   }
 

@@ -21,6 +21,7 @@ class _ItemCardState extends State<ItemCard> {
 
   @override
   Widget build(BuildContext context) {
+//    print(widget.product);
     return GestureDetector(
       onTap: widget.press,
       child: Padding(
@@ -33,10 +34,11 @@ class _ItemCardState extends State<ItemCard> {
                 flex: 3,
                 child: Container(
                   height: 150,
-                  child: Image.asset(
-                    'assets/images/campana.png',
-                    fit: BoxFit.cover,
-                  ),
+                    child: FadeInImage(
+                      fit: BoxFit.cover,
+                      placeholder: AssetImage('assets/images/loading.gif'),
+                      image: NetworkImage(widget.product['pictures'][0]),
+                    ),
                 ),
               ),
 

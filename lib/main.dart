@@ -7,6 +7,7 @@ import './containers/splash/splash.dart';
 import './containers/details/details_screen.dart';
 import './containers/shoppingCart/shoppingCart.dart';
 import './hooks/useGetAsyncStorageProduct.dart';
+import './containers/listInvoices/listInvoices.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
       'login': (BuildContext context) => Login(),
       'home': (BuildContext context) => HomeScreen(),
       'detailScreen': (BuildContext context) => DetailsScreen(),
-      'shoppingCart': (BuildContext context) => ShoppingCart()
+      'shoppingCart': (BuildContext context) => ShoppingCart(),
+      'listInvoices': (BuildContext context) => ListInvoices(),
     };
 
     return MultiProvider(
