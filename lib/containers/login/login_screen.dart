@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rocket_store_flutter/api/auth_api.dart';
-import 'package:rocket_store_flutter/utils/dialogs.dart';
 
+import './../../api/auth_api.dart';
+import './../../utils/dialogs.dart';
+import './../../utils/app_config.dart';
+import './../../utils/globals.dart' as globals;
 import '../../utils/responsive.dart';
 
 class Login extends StatefulWidget {
@@ -22,6 +24,8 @@ class _LoginState extends State<Login> {
   final _authAPI = AuthApi();
 
   _login() async {
+//    print('-------------------------------------');
+//    print(globals.url);
     if(isFetching) return;
     if(formValid) {
       setState(() {
@@ -144,18 +148,6 @@ class _LoginState extends State<Login> {
                         ),
 
                         SizedBox(height: responsive.hp(20)),
-//
-//                        Container(
-//                          width: responsive.wp(25),
-//                          height: responsive.wp(25),
-//                          margin: EdgeInsets.only(top: size.width * 0.1),
-//                          decoration: BoxDecoration(
-//                            image: DecorationImage(
-//                                image: AssetImage('assets/images/rocketB.png'),
-//                                fit: BoxFit.scaleDown
-//                            ),
-//                          ),
-//                        ),
 
                         SizedBox(height: responsive.hp(12)),
 
@@ -219,7 +211,7 @@ class _LoginState extends State<Login> {
                           ),
                         ),
 
-                        SizedBox(height: responsive.hp(22)),
+                        AppConfig.debugMode ? SizedBox(height: responsive.hp(18)) : SizedBox(height: responsive.hp(22)),
 
                         ButtonTheme(
                           minWidth: size.width - 30,
@@ -241,6 +233,29 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                         ),
+
+                        AppConfig.debugMode ? Expanded(
+                          flex: 2,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushNamedAndRemoveUntil('configuration', (Route<dynamic> route) => false);
+                            },
+                            child: Container(
+                              alignment: Alignment(1, 0),
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 18.0),
+                                child: Row(
+                                  // crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Icon(Icons.settings),
+                                    Text('Configuration')
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ) : Container()
                       ],
                     ),
                   ),

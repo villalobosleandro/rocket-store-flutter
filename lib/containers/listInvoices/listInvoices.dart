@@ -29,13 +29,14 @@ class _ListInvoicesState extends State<ListInvoices> {
     try{
       final token = await _api.getAccessToken();
       var query = [{
-        'extraData': token['token']
+        'extraData': token['token'],
       }];
 
       final profile = await _api.callMethod(context, ApiRoutes.profileGet, query);
       if(profile.length > 0) {
         var data = [{
         'userId': profile['id'],
+        'itemsAsArray': true,
         'options': {
           'limit': 1000
         },
@@ -43,6 +44,7 @@ class _ListInvoicesState extends State<ListInvoices> {
         }];
         final res = await _api.callMethod(context, ApiRoutes.listInvoicesByUserId, data);
         if(res.length > 0) {
+//          print('todo => $res');
           setState(() {
             invoices = res['invoices'];
             isFetching = false;
@@ -55,6 +57,50 @@ class _ListInvoicesState extends State<ListInvoices> {
         isFetching = false;
       });
     }
+  }
+
+  _modalInvoiceDetail(context, invoice) {
+    print('invoice ====> ');
+    print(invoice);
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Order #' + invoice['correlative']),
+          content: SingleChildScrollView(
+            child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('Control: ' + invoice['_id'].toUpperCase()),
+                Text('Method: ' + invoice['method'].toUpperCase()),
+                Text('Date: 08/10/2020 4:30pm'),
+
+//                ListView.builder(
+//                  itemCount: invoice['items'].length,
+//                  itemBuilder: (context, index) {
+//                    return Container(
+//                      child: Column(
+//                        children: <Widget>[
+//                          Text(invoice[index]['item']),
+//                          Text(invoice[index]['qty']),
+//                          Text(invoice[index]['method'] == 'credit' ? invoice[index]['priceOnCredit'] : invoice[index]['price']),
+//                          invoice[index]['method'] == 'credit' ? Text(invoice[index]['numberOfQuotes']) : Container(),
+////                          Text('Total: ' + invoice[index][''])
+//
+//                        ],
+//                      ),
+//                    );
+//                  },
+//                )
+              ],
+            ),
+
+
+
+
+          ),
+
+        )
+    );
   }
 
   @override
@@ -130,42 +176,47 @@ class _ListInvoicesState extends State<ListInvoices> {
               itemCount: invoices.length,
               itemBuilder: (context, index) {
 //                print(invoices[index]);
-                return Row(
-                  children: <Widget>[
-                    Container(
-                        width: MediaQuery.of(context).size.width / 4,
-                        alignment: Alignment(-1, 0),
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(invoices[index]['correlative'].toString(),  textAlign: TextAlign.start),
-                        )
-                    ),
+                return InkWell(
+                  onTap: (){
+                    this._modalInvoiceDetail(context, invoices[index]);
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                          width: MediaQuery.of(context).size.width / 4,
+                          alignment: Alignment(-1, 0),
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(invoices[index]['correlative'].toString(),  textAlign: TextAlign.start),
+                          )
+                      ),
 
-                    Container(
-                        width: MediaQuery.of(context).size.width / 4,
-                        alignment: Alignment(0, 0),
-                        height: 50,
-                        child: Text(invoices[index]['amount'].toString(),  textAlign: TextAlign.center)
-                    ),
+                      Container(
+                          width: MediaQuery.of(context).size.width / 4,
+                          alignment: Alignment(0, 0),
+                          height: 50,
+                          child: Text(invoices[index]['amount'].toString(),  textAlign: TextAlign.center)
+                      ),
 
-                    Container(
-                        width: MediaQuery.of(context).size.width / 4,
-                        alignment: Alignment(0, 0),
-                        height: 50,
-                        child: Text(Moment(invoices[index]['updateAt']).format('yyyy-MM-dd'),  textAlign: TextAlign.center)
-                    ),
+                      Container(
+                          width: MediaQuery.of(context).size.width / 4,
+                          alignment: Alignment(0, 0),
+                          height: 50,
+                          child: Text(Moment(invoices[index]['updateAt']).format('yyyy-MM-dd'),  textAlign: TextAlign.center)
+                      ),
 
-                    Container(
-                        width: MediaQuery.of(context).size.width / 4,
-                        alignment: Alignment(1, 0),
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Text(invoices[index]['method'], textAlign: TextAlign.end),
-                        )
-                    )
-                  ],
+                      Container(
+                          width: MediaQuery.of(context).size.width / 4,
+                          alignment: Alignment(1, 0),
+                          height: 50,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Text(invoices[index]['method'], textAlign: TextAlign.end),
+                          )
+                      )
+                    ],
+                  ),
                 );
               },
             ),

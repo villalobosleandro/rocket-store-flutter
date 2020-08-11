@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import './../../api/auth_api.dart';
 import './../../utils/app_config.dart';
+import './../../utils/globals.dart' as globals;
 
 class SplashPage extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
 
   connectionBackend() async {
     try{
-      final response = await Meteor.connect(AppConfig.apiHost);
+      final response = await Meteor.connect(globals.url);
 
       if(response != null) {
         print('status = $response');

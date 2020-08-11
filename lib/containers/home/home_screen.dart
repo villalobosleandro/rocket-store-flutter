@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       drawer: MenuDrawer(),
-      body: (consultCampaing ) ? Container(
+      body: (consultCampaing || isFetching ||  consultCategories) ? Container(
         child: Center(
           child: CupertinoActivityIndicator(radius: 15),
         ),
@@ -262,8 +262,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProducts() {
+    print('========================');
+    print(itemProducts.length);
     if(itemProducts.length > 0) {
-      return Expanded(
+      return Flexible(
         child: ListView.builder(
           itemCount: itemProducts.length,
           itemBuilder: (context, index) => ItemCard(
@@ -280,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }else {
       return Center(
-        child: Text('No hay productos'),
+        child: Text('No products'),
       );
     }
 

@@ -1,6 +1,9 @@
+import './globals.dart' as globals;
+
 class AppConfig {
-  static const apiHost = "ws://192.168.0.181:200/websocket";
-//  static const apiHost = "ws://ee699a207275.ngrok.io/websocket";
+//  static var apiHost = globals.url;
+//  static const apiHost = "ws://333ad25e2291.ngrok.io/websocket";
+  static const debugMode = true;
 
 }
 
