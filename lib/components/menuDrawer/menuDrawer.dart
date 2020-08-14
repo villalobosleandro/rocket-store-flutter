@@ -104,6 +104,32 @@ class _MenuDrawerState extends State<MenuDrawer> {
                           ),
                         ),
                       ),
+
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil('listNotifications', (Route<dynamic> route) => false);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 18.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(width: 2.0, color: Colors.black12))
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0, left: 18.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.notifications, size: 32.0, color: Colors.black45),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 18.0),
+                                    child: Text('List Notifications'),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

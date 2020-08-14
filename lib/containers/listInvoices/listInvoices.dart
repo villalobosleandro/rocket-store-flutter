@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moment/moment.dart';
 
+import './../invoiceDetail/invoiceDetail.dart';
 import './../../components/topBar.dart';
 import './../../components/menuDrawer/menuDrawer.dart';
 import './../../api/auth_api.dart';
 import './../../hooks/useGetAsyncStorageProduct.dart';
 import './../../utils/app_config.dart';
+
 
 class ListInvoices extends StatefulWidget {
   @override
@@ -15,14 +17,40 @@ class ListInvoices extends StatefulWidget {
 }
 
 class _ListInvoicesState extends State<ListInvoices> {
-  bool isFetching = true;
+  bool isFetching = true, consultNotifi = true;
   final _api = AuthApi(), hook = useGetAsyncStorageProduct();
-  dynamic invoices = [];
+  dynamic invoices = [], notifications =[];
 
   @override
   void initState() {
     this._getInvoices();
+    this._getNotifications();
     super.initState();
+  }
+
+  _getNotifications() async {
+    try{
+      final token = await _api.getAccessToken();
+      var query = [{
+        'extraData': token['token'],
+        'unread': true
+      }];
+
+      final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
+      if(notifi['success'] == true) {
+        setState(() {
+          notifications = notifi['data'];
+          consultNotifi = false;
+        });
+      }
+      setState(() {
+        consultNotifi = false;
+      });
+    }on PlatformException catch(e) {
+      setState(() {
+        consultNotifi = false;
+      });
+    }
   }
 
   _getInvoices() async {
@@ -44,7 +72,6 @@ class _ListInvoicesState extends State<ListInvoices> {
         }];
         final res = await _api.callMethod(context, ApiRoutes.listInvoicesByUserId, data);
         if(res.length > 0) {
-//          print('todo => $res');
           setState(() {
             invoices = res['invoices'];
             isFetching = false;
@@ -59,50 +86,6 @@ class _ListInvoicesState extends State<ListInvoices> {
     }
   }
 
-  _modalInvoiceDetail(context, invoice) {
-    print('invoice ====> ');
-    print(invoice);
-    showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Order #' + invoice['correlative']),
-          content: SingleChildScrollView(
-            child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text('Control: ' + invoice['_id'].toUpperCase()),
-                Text('Method: ' + invoice['method'].toUpperCase()),
-                Text('Date: 08/10/2020 4:30pm'),
-
-//                ListView.builder(
-//                  itemCount: invoice['items'].length,
-//                  itemBuilder: (context, index) {
-//                    return Container(
-//                      child: Column(
-//                        children: <Widget>[
-//                          Text(invoice[index]['item']),
-//                          Text(invoice[index]['qty']),
-//                          Text(invoice[index]['method'] == 'credit' ? invoice[index]['priceOnCredit'] : invoice[index]['price']),
-//                          invoice[index]['method'] == 'credit' ? Text(invoice[index]['numberOfQuotes']) : Container(),
-////                          Text('Total: ' + invoice[index][''])
-//
-//                        ],
-//                      ),
-//                    );
-//                  },
-//                )
-              ],
-            ),
-
-
-
-
-          ),
-
-        )
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,10 +93,11 @@ class _ListInvoicesState extends State<ListInvoices> {
         elevation: 0,
         flexibleSpace: TopBar(
           title: 'INVOICES',
+          notifications: notifications
         ),
       ),
       drawer: MenuDrawer(),
-      body: isFetching ? Container(
+      body: (isFetching || consultNotifi) ? Container(
         child: Center(
           child: CupertinoActivityIndicator(radius: 15),
         ),
@@ -130,7 +114,7 @@ class _ListInvoicesState extends State<ListInvoices> {
       return Column(
         children: <Widget>[
           Container(
-            color: Colors.grey,
+            color: Colors.red,
             height: 50,
             child: Row(
               children: <Widget>[
@@ -140,7 +124,11 @@ class _ListInvoicesState extends State<ListInvoices> {
                     height: 50,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8.0),
-                      child: Text('#Order',  textAlign: TextAlign.start),
+                      child: Text(
+                          '# Order'.toUpperCase(),
+                          textAlign: TextAlign.start,
+                          style: TextStyle(color: Colors.white),
+                      ),
                     )
                 ),
 
@@ -148,14 +136,22 @@ class _ListInvoicesState extends State<ListInvoices> {
                     width: MediaQuery.of(context).size.width / 4,
                     alignment: Alignment(0, 0),
                     height: 50,
-                    child: Text('Amaount',  textAlign: TextAlign.center)
+                    child: Text(
+                        'Amaount'.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                    )
                 ),
 
                 Container(
                     width: MediaQuery.of(context).size.width / 4,
                     alignment: Alignment(0, 0),
                     height: 50,
-                    child: Text('Date',  textAlign: TextAlign.center)
+                    child: Text(
+                        'Date'.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                    )
                 ),
 
                 Container(
@@ -164,7 +160,11 @@ class _ListInvoicesState extends State<ListInvoices> {
                     height: 50,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Text('Method', textAlign: TextAlign.end),
+                      child: Text(
+                          'Method'.toUpperCase(),
+                          textAlign: TextAlign.end,
+                          style: TextStyle(color: Colors.white),
+                      ),
                     )
                 )
               ],
@@ -175,10 +175,14 @@ class _ListInvoicesState extends State<ListInvoices> {
             child: ListView.builder(
               itemCount: invoices.length,
               itemBuilder: (context, index) {
-//                print(invoices[index]);
                 return InkWell(
                   onTap: (){
-                    this._modalInvoiceDetail(context, invoices[index]);
+                    Navigator.pushAndRemoveUntil(context,
+                        MaterialPageRoute(builder: (context) => InvoiceDetail(
+                            invoiceId : invoices[index]['_id'])),
+                            (route) => false
+                    );
+
                   },
                   child: Row(
                     children: <Widget>[
@@ -188,7 +192,10 @@ class _ListInvoicesState extends State<ListInvoices> {
                           height: 50,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(invoices[index]['correlative'].toString(),  textAlign: TextAlign.start),
+                            child: Text(
+                                invoices[index]['correlative'].toString(),
+                                textAlign: TextAlign.start,
+                            ),
                           )
                       ),
 

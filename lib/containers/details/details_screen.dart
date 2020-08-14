@@ -32,11 +32,11 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProviderStateMixin {
   useGetAsyncStorageProduct hook;
   int numberOfProducts = 0;
-  bool isFetching = true, consultQuestions = true;
+  bool isFetching = true, consultQuestions = true, consultNotifi = true;
   TabController tabController;
   final _api = AuthApi();
   dynamic productDetail = [], comments = [], questions = [];
-  var descripcion = '', question = '';
+  var descripcion = '', question = '', notifications = [];
   String showOptions = 'add', commentId = '';
   double ratting = 0;
 
@@ -47,6 +47,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
 //    this.numberProducts();
     this._getProductDetail();
     this._getQuestionsAndAnswer();
+    this._getNotifications();
     super.initState();
   }
 
@@ -54,6 +55,31 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   void dispose() {
     tabController.dispose();
     super.dispose();
+  }
+
+  _getNotifications() async {
+    try{
+      final token = await _api.getAccessToken();
+      var query = [{
+        'extraData': token['token'],
+        'unread': true
+      }];
+
+      final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
+      if(notifi['success'] == true) {
+        setState(() {
+          notifications = notifi['data'];
+          consultNotifi = false;
+        });
+      }
+      setState(() {
+        consultNotifi = false;
+      });
+    }on PlatformException catch(e) {
+      setState(() {
+        consultNotifi = false;
+      });
+    }
   }
 
   _getQuestionsAndAnswer() async  {
@@ -108,15 +134,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     }
   }
 
-//  numberProducts() async {
-//    numberOfProducts = await hook.getNumberProducts();
-//    setState(() {
-//      isFetching = false;
-//    });
-////    print('=========== $numberOfProducts');
-//
-//  }
-
   _addElementToCart() async {
 
     dynamic element = {
@@ -157,7 +174,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
     final storage = FlutterSecureStorage();
     Map<String, String> allValues = await storage.readAll();
     var aux = jsonDecode(allValues['SESSION']);
-    dynamic temp;
 
     if(comments.length > 0) {
       for (var i = 0; i < comments.length; ++i) {
@@ -465,7 +481,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         elevation: 0,
         flexibleSpace: TopBar(
             title: 'DETAILS',
-            numberOfProducts: numberOfProducts
+            notifications: notifications
         ),
       ),
       drawer: MenuDrawer(),

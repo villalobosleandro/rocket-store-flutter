@@ -9,6 +9,9 @@ import './containers/shoppingCart/shoppingCart.dart';
 import './hooks/useGetAsyncStorageProduct.dart';
 import './containers/listInvoices/listInvoices.dart';
 import './containers/configuration/configuration.dart';
+import './containers/invoiceDetail/invoiceDetail.dart';
+import './containers/example/example.dart';
+import './containers/listNotifications/listNotifications.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,13 +23,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final routes = <String, WidgetBuilder> {
+//      'example': (BuildContext context) => MyExampleApp(),
       'login': (BuildContext context) => Login(),
       'home': (BuildContext context) => HomeScreen(),
       'detailScreen': (BuildContext context) => DetailsScreen(),
       'shoppingCart': (BuildContext context) => ShoppingCart(),
       'listInvoices': (BuildContext context) => ListInvoices(),
       'configuration': (BuildContext context) => Configuration(),
-      'splashPage': (BuildContext context) => SplashPage()
+      'splashPage': (BuildContext context) => SplashPage(),
+      'invoiceDetail': (BuildContext context) => InvoiceDetail(),
+      'listNotifications': (BuildContext context) => ListNotifications(),
     };
 
     return MultiProvider(

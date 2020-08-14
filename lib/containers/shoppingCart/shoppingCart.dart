@@ -21,9 +21,9 @@ class ShoppingCart extends StatefulWidget {
 
 class _ShoppingCartState extends State<ShoppingCart> {
   int numberOfProductsInCart = 0, _radioValue1 = 0, totalAmountCount = 0, totalAmountCredit = 0;
-  bool isFetching = true;
+  bool isFetching = true, consultNotifi = true;
   useGetAsyncStorageProduct hook;
-  var products = [];
+  var products = [], notifications = [];
   final _api = AuthApi();
 
   //contado 0, a credito 1
@@ -31,8 +31,34 @@ class _ShoppingCartState extends State<ShoppingCart> {
   @override
   void initState() {
     this.hook = Provider.of<useGetAsyncStorageProduct>(context, listen: false);
+    this._getNotifications();
     super.initState();
     this.getNumberProducts();
+  }
+
+  _getNotifications() async {
+    try{
+      final token = await _api.getAccessToken();
+      var query = [{
+        'extraData': token['token'],
+        'unread': true
+      }];
+
+      final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
+      if(notifi['success'] == true) {
+        setState(() {
+          notifications = notifi['data'];
+          consultNotifi = false;
+        });
+      }
+      setState(() {
+        consultNotifi = false;
+      });
+    }on PlatformException catch(e) {
+      setState(() {
+        consultNotifi = false;
+      });
+    }
   }
 
   getNumberProducts() async {
@@ -229,13 +255,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
       appBar: AppBar(
         elevation: 0,
         flexibleSpace: TopBar(
-//          title: 'CART',
+          title: 'CART',
+          notifications: notifications
 //          routeName: 'home',
 //          number: numberOfProductsInCart,
         ),
       ),
       drawer: MenuDrawer(),
-      body: isFetching ? Container(
+      body: (isFetching || consultNotifi) ? Container(
       child: Center(
         child: CupertinoActivityIndicator(radius: 15),
       ),

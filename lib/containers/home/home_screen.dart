@@ -13,19 +13,18 @@ import './../../hooks/useGetAsyncStorageProduct.dart';
 import './../../components/menuDrawer/menuDrawer.dart';
 import './../../utils/dialogs.dart';
 
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isFetching = true, consultCampaing = true, consultCategories = true;
+  bool isFetching = true, consultCampaing = true, consultCategories = true, consultNotifi = true;
 
   List<dynamic> itemProducts = List<Product>();
   int numberOfProducts = 0;
   final _api = AuthApi(), hook = useGetAsyncStorageProduct();
-  dynamic campaing = {}, categories = [];
+  dynamic campaing = {}, categories = [], notifications = [];
 
   @override
   void initState() {
@@ -33,7 +32,34 @@ class _HomeScreenState extends State<HomeScreen> {
     this._getActiveCampaing();
     this._getCategories();
     this._getProducts();
-    this.numberProducts();
+//    this.numberProducts();
+    this._getNotifications();
+  }
+
+  _getNotifications() async {
+    try{
+      final token = await _api.getAccessToken();
+      var query = [{
+        'extraData': token['token'],
+        'unread': true
+      }];
+
+      final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
+//      print('notificaciones => $notifi');
+      if(notifi['success'] == true) {
+        setState(() {
+          notifications = notifi['data'];
+          consultNotifi = false;
+        });
+      }
+      setState(() {
+        consultNotifi = false;
+      });
+    }on PlatformException catch(e) {
+      setState(() {
+        consultNotifi = false;
+      });
+    }
   }
 
   _getActiveCampaing() async {
@@ -79,11 +105,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  numberProducts() async {
-    numberOfProducts = await hook.getNumberProducts();
-//    print('=========== $numberOfProductsInCart');
-
-  }
+//  numberProducts() async {
+//    numberOfProducts = await hook.getNumberProducts();
+////    print('=========== $numberOfProductsInCart');
+//
+//  }
 
   _getProducts() async {
     try {
@@ -155,11 +181,12 @@ class _HomeScreenState extends State<HomeScreen> {
         flexibleSpace: TopBar(
           hideBackButton: true,
           title: 'DASHBOARD',
-          numberOfProducts: numberOfProducts
+          notifications: notifications
+//          numberOfProducts: numberOfProducts
         ),
       ),
       drawer: MenuDrawer(),
-      body: (consultCampaing || isFetching ||  consultCategories) ? Container(
+      body: (consultCampaing || isFetching ||  consultCategories || consultNotifi) ? Container(
         child: Center(
           child: CupertinoActivityIndicator(radius: 15),
         ),
@@ -262,8 +289,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProducts() {
-    print('========================');
-    print(itemProducts.length);
+//    print('========================');
+//    print(itemProducts.length);
     if(itemProducts.length > 0) {
       return Flexible(
         child: ListView.builder(

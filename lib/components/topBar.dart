@@ -9,6 +9,7 @@ class TopBar extends StatefulWidget {
   bool hideBackButton;
   String title;
   int numberOfProducts;
+  dynamic notifications;
 
   @override
   _TopBarState createState() => _TopBarState();
@@ -16,7 +17,8 @@ class TopBar extends StatefulWidget {
     Key key,
     this.hideBackButton = false,
     this.title = 'ROCKET',
-    this.numberOfProducts = 0
+    this.numberOfProducts = 0,
+    this.notifications = 0
   }) : super(key: key);
 
 }
@@ -27,6 +29,9 @@ class _TopBarState extends State<TopBar> {
 
   @override
   void initState() {
+//    print('==============');
+//    print(widget.notifications);
+//    print(widget.notifications.length);
     this.numberProducts();
     super.initState();
   }
@@ -37,63 +42,71 @@ class _TopBarState extends State<TopBar> {
 //    print('tobar $numberOfProductsInCart');
   }
 
-  _logOut() {
-    Navigator.of(context).pushNamedAndRemoveUntil('login', (Route<dynamic> route) => false);
-  }
 
-  _exitApp() {
-    return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Do you really want to exit the app?'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('No'),
-              onPressed: () =>Navigator.pop(context, false),
-            ),
-            FlatButton(
-              child: Text('Yes'),
-              onPressed: () async {
-                final storage = new FlutterSecureStorage();
-                await storage.delete(key: 'SESSION');
-                Navigator.pop(context, true);
-                _logOut();
-              },
-            ),
-          ],
-        )
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<useGetAsyncStorageProduct>(
 
       builder: (context, viewModel, child) {
-//        print('*************');
-//        print(widget.numberOfProducts);
         return AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
           title: Text(widget.title, style: TextStyle(color: Colors.black)),
           leading: IconButton(
-            icon: Icon(Icons.menu, color: Colors.black, size: 28,),
+            icon: Icon(Icons.menu, color: Colors.black, size: 28),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
           actions: <Widget>[
+
+            widget.notifications.length > 0 ? IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('listNotifications', (Route<dynamic> route) => false);
+              },
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              icon: Stack(
+                children: <Widget>[
+                  Icon(Icons.notifications, color: Colors.black, size: 28),
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                      child: Text(
+                        widget.notifications.length.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ) : Container(),
+
             viewModel.productsCount != 0 ?
+
             IconButton(
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil('shoppingCart', (Route<dynamic> route) => false);
                 },
-                icon: new Stack(
+                icon: Stack(
                   children: <Widget>[
-                    new Icon(Icons.shopping_cart, color: Colors.black, size: 28),
-                    new Positioned(
+                    Icon(Icons.shopping_cart, color: Colors.black, size: 28),
+                    Positioned(
                       right: 0,
-                      child: new Container(
+                      child: Container(
                         padding: EdgeInsets.all(1),
-                        decoration: new BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(6),
                         ),
@@ -101,9 +114,9 @@ class _TopBarState extends State<TopBar> {
                           minWidth: 12,
                           minHeight: 12,
                         ),
-                        child: new Text(
+                        child: Text(
                           viewModel.productsCount.toString(),
-                          style: new TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                           ),
@@ -115,13 +128,6 @@ class _TopBarState extends State<TopBar> {
                 )
             ) : Container(),
 
-//            IconButton(
-//              onPressed: () {
-//                _exitApp();
-//              },
-//
-//              icon: Icon(Icons.exit_to_app, color: Colors.black, size: 28),
-//            )
           ],
         );
       },

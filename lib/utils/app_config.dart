@@ -20,4 +20,7 @@ class ApiRoutes {
   static const profileGet = 'profile.get';
   static const storeInsert = 'store_invoice.insert';
   static const listInvoicesByUserId = 'store_invoice.listByUserId';
+  static const invoiceGet = 'store_invoice.get';
+  static const notificationsList = 'store_notification.list';
+  static const notificationSetUnread = 'store_notification.setUnread';
 }
