@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:moment/moment.dart';
+//import 'package:moment/moment.dart';
 
 import './../invoiceDetail/invoiceDetail.dart';
 import './../../components/topBar.dart';
@@ -210,7 +210,7 @@ class _ListInvoicesState extends State<ListInvoices> {
                           width: MediaQuery.of(context).size.width / 4,
                           alignment: Alignment(0, 0),
                           height: 50,
-                          child: Text(Moment(invoices[index]['updateAt']).format('yyyy-MM-dd'),  textAlign: TextAlign.center)
+//                          child: Text(Moment(invoices[index]['updateAt']).format('yyyy-MM-dd'),  textAlign: TextAlign.center)
                       ),
 
                       Container(

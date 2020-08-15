@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:moment/moment.dart';
+//import 'package:moment/moment.dart';
 import 'package:rocket_store_flutter/containers/details/details_screen.dart';
 
 import './../../components/topBar.dart';

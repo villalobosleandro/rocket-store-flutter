@@ -53,10 +53,10 @@ class _TopBarState extends State<TopBar> {
           backgroundColor: Colors.white,
           elevation: 0,
           title: Text(widget.title, style: TextStyle(color: Colors.black)),
-          leading: IconButton(
-            icon: Icon(Icons.menu, color: Colors.black, size: 28),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+//          leading: IconButton(
+//            icon: Icon(Icons.exposure, color: Colors.black, size: 28),
+//            onPressed: () => Scaffold.of(context).openDrawer(),
+//          ),
           actions: <Widget>[
 
             widget.notifications.length > 0 ? IconButton(

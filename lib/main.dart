@@ -45,8 +45,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Rocket Store',
         theme: ThemeData(
+          primaryIconTheme: IconThemeData(color: Colors.black),
           textTheme: Theme.of(context).textTheme.apply(bodyColor: Color(0xFF535353)),
           visualDensity: VisualDensity.adaptivePlatformDensity,
+//          iconTheme: IconThemeData(
+//              color: Colors.red,
+//          ),
         ),
         home: SplashPage(),
         routes: routes,

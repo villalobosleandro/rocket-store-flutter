@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart' show required;
 import 'package:flutter/services.dart';
 import 'package:meteorify/meteorify.dart';
@@ -67,6 +68,11 @@ class AuthApi {
       return [];
     }
 
+  }
+
+  formatter(number) {
+    var f = NumberFormat('###,###,###.00', 'en_US');
+    return f.format(number);
   }
 
 

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:moment/moment.dart';
+//import 'package:moment/moment.dart';
 
 import './../../api/auth_api.dart';
 import './../../utils/app_config.dart';
@@ -149,7 +149,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         Text('Invoice Information'),
         Text('Orden: ' + invoice['correlative']),
         Text('Control: ' + invoice['_id']),
-        Text('Date: ' + Moment(invoice['timestamp']).format('yyyy-MM-dd hh:mm')),
+//        Text('Date: ' + Moment(invoice['timestamp']).format('yyyy-MM-dd hh:mm')),
         Text('Status: ' + invoice['status']),
         Text('Method: ' + invoice['method']),
       ],

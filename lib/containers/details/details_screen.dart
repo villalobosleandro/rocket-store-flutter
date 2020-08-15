@@ -8,7 +8,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:moment/moment.dart';
+//import 'package:moment/moment.dart';
 import 'package:animated_floatactionbuttons/animated_floatactionbuttons.dart';
 
 import './../../utils/mColors.dart';
@@ -44,7 +44,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   void initState() {
     this.hook = Provider.of<useGetAsyncStorageProduct>(context, listen: false);
     tabController = TabController(length: 3, vsync: this);
-//    this.numberProducts();
     this._getProductDetail();
     this._getQuestionsAndAnswer();
     this._getNotifications();
@@ -284,32 +283,36 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
 
   _modalQuestion(context) {
     showDialog(
+
         context: context,
         builder: (_) => AlertDialog(
           title: Text('Write your question'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+          content: Container(
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
 
-              //textfromfield
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: TextFormField(
-                  textCapitalization: TextCapitalization.none,
-                  initialValue: question,
-                  onChanged: (value) => question = value,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  textAlign: TextAlign.start,
+                //textfromfield
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.none,
+                    initialValue: question,
+                    onChanged: (value) => question = value,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    textAlign: TextAlign.start,
 //                  style: const TextStyle(
 //                    color: Colors.red,
 //                  ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: <Widget>[
-            FlatButton(
+            OutlineButton(
               onPressed: () {
                 setState(() {
                   question = '';
@@ -328,19 +331,20 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
             ),
 
             FlatButton(
+              color: Colors.green,
               onPressed: () {
                 this._insertQuestion();
                 Navigator.of(context).pop();
               },
               child: Text('Save', style: TextStyle(
-                  color: Colors.green
+                  color: Colors.white
               )
               ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.green,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
+//              shape: RoundedRectangleBorder(side: BorderSide(
+//                  color: Colors.green,
+//                  width: 1,
+//                  style: BorderStyle.solid
+//              ), borderRadius: BorderRadius.circular(5)),
             )
           ],
         )
@@ -474,6 +478,41 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         ));
   }
 
+  _showModalImagePreview(images, context) {
+    print(images.length);
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Container(
+            height: 350.0,
+            child: images.length > 1 ? Swiper(
+              containerHeight: 350.0,
+              layout: SwiperLayout.TINDER,
+              autoplay: true,
+              itemCount: images.length,
+              itemWidth: 350.0,
+              itemHeight: 350.0,
+              itemBuilder: (BuildContext context, int index) {
+                return FadeInImage(
+                  fit: BoxFit.fill,
+                  height: 350.0,
+                  width: 350.0,
+                  placeholder: AssetImage('assets/images/loading.gif'),
+                  image: NetworkImage(images[index]),
+                );
+              },
+            ) : FadeInImage(
+              fit: BoxFit.fill,
+              height: 350.0,
+              width: 350.0,
+              placeholder: AssetImage('assets/images/loading.gif'),
+              image: NetworkImage(images[0]),
+            ),
+          ),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -505,21 +544,33 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
             children: <Widget>[
               Expanded(
                 flex: 4,
-                child: Container(
-                    child: Swiper(
-                      autoplay: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        return FadeInImage(
-                          fit: BoxFit.cover,
+                child: InkWell(
+                  onTap: (){
+                    this._showModalImagePreview(productDetail['pictures'], context);
+                  },
+                  child: Container(
+                      child: productDetail['pictures'].length > 1 ? Swiper(
+                        autoplay: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return FadeInImage(
+                            fit: BoxFit.fill,
+                            placeholder: AssetImage('assets/images/loading.gif'),
+                            image: NetworkImage(productDetail['pictures'][index]),
+                          );
+                        },
+                        itemCount: 3,
+                        itemWidth: 300.0,
+                        itemHeight: 300.0,
+                        layout: SwiperLayout.TINDER,
+                      ) : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FadeInImage(
+                          fit: BoxFit.fill,
                           placeholder: AssetImage('assets/images/loading.gif'),
                           image: NetworkImage(productDetail['pictures'][0]),
-                        );
-                      },
-                      itemCount: 3,
-                      itemWidth: 300.0,
-                      itemHeight: 300.0,
-                      layout: SwiperLayout.TINDER,
-                    )
+                        ),
+                      )
+                  ),
                 ),
               ),
 
@@ -535,7 +586,10 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                           children: <Widget>[
                             Flexible(
                               flex: 1,
-                              child: Text(productDetail['name'], textAlign: TextAlign.justify),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text(productDetail['name'], textAlign: TextAlign.justify),
+                              ),
                             )
                           ],
                         )
@@ -605,7 +659,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('price on credit'.toUpperCase()),
-                      Text("\$ " + productDetail['priceOnCredit'].toString()),
+                      Text("\$ " + _api.formatter(productDetail['priceOnCredit']).toString()),
                     ],
                   ),
                 ),
@@ -615,7 +669,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text('counted price'.toUpperCase()),
-                      Text("\$ " + productDetail['price'].toString())
+                      Text("\$ " + _api.formatter(productDetail['price']).toString())
                     ],
                   ),
                 )
@@ -671,6 +725,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   }
 
   Widget getTabBarPages() {
+
     return TabBarView(controller: tabController, children: <Widget>[
       //descripcion
       Container(
@@ -693,6 +748,8 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                 ListView.builder(
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
+                      print(']]]]]]]]]]]]]]]');
+                      print(comments[index]);
                       return Container(
                         child: Padding(
                           padding: const EdgeInsets.all(5),
@@ -712,7 +769,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                                   color: Colors.amber,
                                 ),
                               ),
-                              Text(Moment(comments[index]['updateAt']).format('yyyy-MM-dd')),
+//                              Text(Moment(comments[index]['updateAt']).format('yyyy-MM-dd')),
                               Text(comments[index]['comment']),
                             ],
                           ),

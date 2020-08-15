@@ -157,12 +157,12 @@ packages:
     source: hosted
     version: "2.1.12"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.15.8"
+    version: "0.16.1"
   logging:
     dependency: transitive
     description:
@@ -191,13 +191,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.6"
-  moment:
-    dependency: "direct main"
-    description:
-      name: moment
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   mongo_dart:
     dependency: transitive
     description:

@@ -19,8 +19,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isFetching = true, consultCampaing = true, consultCategories = true, consultNotifi = true;
-
+  bool isFetching = true, consultCampaing = true, consultCategories = true,
+      consultNotifi = true, consultFilterCategory = false;
   List<dynamic> itemProducts = List<Product>();
   int numberOfProducts = 0;
   final _api = AuthApi(), hook = useGetAsyncStorageProduct();
@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _filterWithCategories(categoryId) async {
 //    print('categoryId => $categoryId');
     setState(() {
-      isFetching = true;
+      consultFilterCategory = true;
     });
     try {
       final token = await _api.getAccessToken();
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if(products['data']['products'] != []) {
         setState(() {
           itemProducts = products['data']['products'];
-          isFetching = false;
+          consultFilterCategory = false;
         });
       }
       setState(() {
@@ -260,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Icon(iconType),
-                      Text(categories[index]['name'], maxLines: 1)
+                      Text(categories[index]['name'], maxLines: 1, style: TextStyle(fontSize: 12),)
                     ],
                   ),
                 ),
@@ -278,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 120,
         width: size.width - 20,
           child: FadeInImage(
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
             placeholder: AssetImage('assets/images/loading.gif'),
             image: NetworkImage(campaing['data']['imageUrl']),
           ),
@@ -289,29 +289,32 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProducts() {
-//    print('========================');
-//    print(itemProducts.length);
-    if(itemProducts.length > 0) {
-      return Flexible(
-        child: ListView.builder(
-          itemCount: itemProducts.length,
-          itemBuilder: (context, index) => ItemCard(
-            product: itemProducts[index],
-            press: () {
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) => DetailsScreen(
-                      product : itemProducts[index])),
-                      (route) => false
-              );
-            },
-          ),
-        ),
+    if(consultFilterCategory == true) {
+      return Center(
+        child: CupertinoActivityIndicator(radius: 15),
       );
     }else {
-      return Center(
-        child: Text('No products'),
-      );
+      if(itemProducts.length > 0) {
+        return Flexible(
+          child: ListView.builder(
+            itemCount: itemProducts.length,
+            itemBuilder: (context, index) => ItemCard(
+              product: itemProducts[index],
+              press: () {
+                Navigator.pushAndRemoveUntil(context,
+                    MaterialPageRoute(builder: (context) => DetailsScreen(
+                        product : itemProducts[index])),
+                        (route) => false
+                );
+              },
+            ),
+          ),
+        );
+      }else {
+        return Center(
+          child: Text('No products'),
+        );
+      }
     }
-
   }
 }
