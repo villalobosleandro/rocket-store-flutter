@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-//import 'package:moment/moment.dart';
 import 'package:rocket_store_flutter/containers/details/details_screen.dart';
 
 import './../../components/topBar.dart';
 import './../../components/menuDrawer/menuDrawer.dart';
 import './../../api/auth_api.dart';
 import './../../utils/app_config.dart';
+import './../../utils/mColors.dart';
+
 
 class ListNotifications extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class ListNotifications extends StatefulWidget {
 
 class _ListNotificationsState extends State<ListNotifications> {
   var notifications = [];
-  bool consultNotifi = true;
+  bool consultNotifi = true, unreadNotify = false;
   final _api = AuthApi();
 
   @override
@@ -33,9 +34,15 @@ class _ListNotificationsState extends State<ListNotifications> {
       }];
 
       final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
-//      print('aaaaaaaa => ');
-//      print(notifi['data']);
       if(notifi['success'] == true) {
+        for (var i = 0; i < notifi['data'].length; ++i) {
+          if(notifi['data'][i]['unread'] == true) {
+            setState(() {
+              unreadNotify = true;
+            });
+          }
+
+        }
         setState(() {
           notifications = notifi['data'];
           consultNotifi = false;
@@ -59,9 +66,24 @@ class _ListNotificationsState extends State<ListNotifications> {
       'extraData': token['token'],
     }];
 
-    final response = await _api.callMethod(context, ApiRoutes.notificationSetUnread, data);
-//    print('***************************');
-//    print(response);
+    await _api.callMethod(context, ApiRoutes.notificationSetUnread, data);
+  }
+
+  _setAllNotifications() async {
+    setState(() {
+      consultNotifi = true;
+    });
+    final token = await _api.getAccessToken();
+    dynamic data = [{
+      'unread': false,
+      'extraData': token['token'],
+    }];
+
+    await _api.callMethod(context, ApiRoutes.notificationSetUnread, data);
+    setState(() {
+      unreadNotify = false;
+    });
+    this._getNotifications();
   }
 
   @override
@@ -90,34 +112,58 @@ class _ListNotificationsState extends State<ListNotifications> {
         child: Text('No notifications'),
       );
     }else {
-      return ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-//          print(notifications[index]['updatedAt']['date']);
-          return ListTile(
-            title: Text(notifications[index]['message']),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(notifications[index]['title'].toLowerCase()),
+      return Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0, top: 8.0, bottom: 8.0),
+            child: unreadNotify == true ? InkWell(
+              onTap: (){
+                this._setAllNotifications();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text('Mark all as read'),
+                  ),
+                  Icon(Icons.done_all)
+                ],
+              ),
+            ) : Container(),
+          ),
+          Flexible(
+            child: ListView.builder(
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+//                print(notifications[index]);
+                return ListTile(
+                  title: Text(notifications[index]['message']),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(notifications[index]['title'].toLowerCase()),
 //                Text('date'),
-              ],
+                    ],
+                  ),
+                  isThreeLine: true,
+                  trailing: notifications[index]['unread'] == true ? Icon(Icons.notification_important, color: redColor,) : Icon(Icons.done_all, color: Colors.blue),
+                  onTap: () {
+                    var temp = {
+                      '_id':  notifications[index]['relatedId']
+                    };
+                    this._setNotification(notifications[index]['_id']);
+                    Navigator.pushAndRemoveUntil(context,
+                        MaterialPageRoute(builder: (context) => DetailsScreen(
+                            product : temp)),
+                            (route) => false
+                    );
+                  },
+                );
+              },
             ),
-            isThreeLine: true,
-            trailing: notifications[index]['unread'] == true ? Icon(Icons.check) : Icon(Icons.done_all, color: Colors.blue),
-            onTap: () {
-              var temp = {
-                '_id':  notifications[index]['relatedId']
-              };
-              this._setNotification(notifications[index]['_id']);
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) => DetailsScreen(
-                      product : temp)),
-                      (route) => false
-              );
-            },
-          );
-        },
+          )
+        ],
       );
     }
   }

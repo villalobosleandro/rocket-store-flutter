@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-//import 'package:moment/moment.dart';
 
 import './../../api/auth_api.dart';
 import './../../utils/app_config.dart';
+import './../../utils/mColors.dart';
 
 class InvoiceDetail extends StatefulWidget {
   final invoiceId;
@@ -42,6 +42,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       if(res['_id'] != null) {
         print('=================');
         print(res);
+        print('==================');
         var query = [{
           'extraData': token['token'],
         }];
@@ -78,6 +79,19 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     }
   }
 
+  _getTotalAmount() {
+    var number = 0;
+    for (var i = 0; i < invoice['items'].length; ++i) {
+      if(invoice['method'] == 'credito'){
+        number = number + (invoice['items'][i]['qty'] * (invoice['items'][i]['priceOnCredit'] * invoice['items'][i]['numberOfFees']));
+      }else {
+        number = number + (invoice['items'][i]['qty'] * invoice['items'][i]['price']);
+      }
+    }
+
+    return number;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,53 +120,51 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _topPart(),
-                SizedBox(height: 10),
                 _middlePart(),
-                SizedBox(height: 10),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.shopping_cart, color: redColor),
+                      Text('Products')
+                    ],
+                  ),
+                ),
                 _bottomPart(),
-//                SizedBox(height: 10),
-//                _amountPart()
+                SizedBox(height: 10),
+                _amountPart()
               ]
           )
       ),
     );
   }
 
-  Widget _topPart() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text('Invoice details #' + invoice['correlative']),
-        SizedBox(height: 10),
-        Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _middlePart() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text('Client Information'),
-              Text('Id: ' + invoice['userId']),
-              Text('Name: ' + profileUser['first_name'] + ' ' + profileUser['last_name']),
-              Text('Email: ' + profileUser['email']),
-              Text('City: ' + profileUser['city']),
-              Text('Phone number: ' + profileUser['phone'].toString())
+              Icon(Icons.featured_play_list, size: 24, color: redColor),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text('Invoice Information',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              ),
             ],
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _middlePart() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text('Invoice Information'),
-        Text('Orden: ' + invoice['correlative']),
-        Text('Control: ' + invoice['_id']),
-//        Text('Date: ' + Moment(invoice['timestamp']).format('yyyy-MM-dd hh:mm')),
-        Text('Status: ' + invoice['status']),
-        Text('Method: ' + invoice['method']),
-      ],
+          SizedBox(height: 10),
+          Text('Order: #' + invoice['correlative']),
+          Text('Control: ' + invoice['_id']),
+          Text('Date: ' + invoice['createdAtFormatted']),
+          Text('Status Order: ' + invoice['status']),
+          Text('Pay Method: ' + invoice['method']),
+        ],
+      ),
     );
   }
 
@@ -161,24 +173,44 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       child: ListView.builder(
         itemCount: invoice['items'].length,
         itemBuilder: (context, index) {
-//          print('=====================');
-//          print(invoice['items'][index]);
+          var price;
           if(invoice['method'] == 'credito'){
-//            print('entro al if $amount');
-              amount = amount + (invoice['items'][index]['qty'] * (invoice['items'][index]['priceOnCredit'] * invoice['items'][index]['numberOfFees']));
+              price = invoice['items'][index]['qty'] * (invoice['items'][index]['priceOnCredit'] * invoice['items'][index]['numberOfFees']);
           }else {
-//            print('no entro al if');
-              amount = amount + (invoice['items'][index]['qty'] * invoice['items'][index]['price']);
+              price = invoice['items'][index]['qty'] * invoice['items'][index]['price'];
           }
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(invoice['items'][index]['item']),
-                Text(invoice['items'][index]['qty'].toString()),
-//                Text(invoice['method'] == 'credito' ? invoice['items'][index]['priceOnCredit'].toString() : invoice['items'][index]['price'].toString())
-              ],
+
+          return Container(
+            width: 200,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              elevation: 5,
+              child: ListTile(
+                leading: FadeInImage(
+                  fit: BoxFit.fill,
+                  placeholder: AssetImage('assets/images/loading.gif'),
+                  image: NetworkImage(invoice['items'][index]['img']),
+                ),
+                title: Text(invoice['items'][index]['item']),
+                subtitle: Row(
+                  children: <Widget>[
+                    Text(invoice['items'][index]['qty'].toString()),
+                    Text(' X '),
+                    Text(invoice['method'] == 'credito' ?
+                    _api.formatter(invoice['items'][index]['priceOnCredit']).toString() :
+                    _api.formatter(invoice['items'][index]['price']).toString(),
+                    ),
+                    invoice['method'] == 'credito' ? Text(' X ') : Container(),
+                    invoice['method'] == 'credito' ? Text(
+                        invoice['items'][index]['numberOfFees'].toString() + ' Quotes',
+                    ) : Container(),
+
+                  ],
+                ),
+                trailing: Text(_api.formatter(price).toString()),
+              ),
             ),
           );
         },
@@ -187,7 +219,17 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget _amountPart() {
-    return Text('monto final $amount');
+    var number = _getTotalAmount();
+    return Container(
+      height: 80,
+      child: Column(
+        children: <Widget>[
+          Text('Subtotal'),
+          Text('iva'),
+          Text(_api.formatter(number))
+        ],
+      ),
+    );
   }
 
 

@@ -8,7 +8,6 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-//import 'package:moment/moment.dart';
 import 'package:animated_floatactionbuttons/animated_floatactionbuttons.dart';
 
 import './../../utils/mColors.dart';
@@ -195,88 +194,93 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         context: context,
         builder: (_) => AlertDialog(
           title: Text('What do you think about this?'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+          content: Container(
+            height: 250,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
 
-              Text('Rate this product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('Rate this product', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
 
-              //ratting
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: RatingBar(
-                  initialRating: ratting,
-                  direction: Axis.horizontal,
-                  allowHalfRating: true,
-                  itemCount: 5,
-                  onRatingUpdate: (rating) {
-                    setState(() {
-                      ratting = rating;
-                    });
-                  },
-                  itemBuilder: (context, _) => Icon(
-                    Icons.star,
-                    color: Colors.amber,
+                //ratting
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: RatingBar(
+                    initialRating: ratting,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    onRatingUpdate: (rating) {
+                      setState(() {
+                        ratting = rating;
+                      });
+                    },
+                    itemBuilder: (context, _) => Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
                   ),
                 ),
-              ),
 
-              //texto
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text('Describe your experience (optional)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-              ),
-
-              //textfromfield
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: TextFormField(
-                  textCapitalization: TextCapitalization.none,
-                  initialValue: descripcion,
-                  onChanged: (value) => descripcion = value,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  textAlign: TextAlign.start,
+                //texto
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text('Describe your experience (optional)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                setState(() {
-                  descripcion = '';
-                  ratting = 0;
-                });
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel', style: TextStyle(
-                  color: Colors.red
-              )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.red,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            ),
 
-            FlatButton(
-              onPressed: () {
-                this._insertOrEditComment();
-                Navigator.of(context).pop();
-              },
-              child: Text('Save', style: TextStyle(
-                  color: Colors.green
-              )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.green,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            )
-          ],
+                //textfromfield
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.none,
+                    initialValue: descripcion,
+                    onChanged: (value) => descripcion = value,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+
+                SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    OutlineButton(
+                      onPressed: () {
+                        setState(() {
+                          descripcion = '';
+                          ratting = 0;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancel', style: TextStyle(
+                          color: Colors.red
+                      )
+                      ),
+                      shape: RoundedRectangleBorder(side: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                          style: BorderStyle.solid
+                      ), borderRadius: BorderRadius.circular(5)),
+                    ),
+
+                    FlatButton(
+                      color: Colors.green,
+                      onPressed: () {
+                        this._insertOrEditComment();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Save', style: TextStyle(
+                          color: Colors.white
+                      )
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
         )
     );
   }
@@ -303,50 +307,46 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     textAlign: TextAlign.start,
-//                  style: const TextStyle(
-//                    color: Colors.red,
-//                  ),
                   ),
                 ),
+                SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    OutlineButton(
+                      onPressed: () {
+                        setState(() {
+                          question = '';
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancel', style: TextStyle(
+                          color: Colors.red
+                      )
+                      ),
+                      shape: RoundedRectangleBorder(side: BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                          style: BorderStyle.solid
+                      ), borderRadius: BorderRadius.circular(5)),
+                    ),
+
+                    FlatButton(
+                      color: Colors.green,
+                      onPressed: () {
+                        this._insertQuestion();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Save', style: TextStyle(
+                          color: Colors.white
+                        )
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),
-          actions: <Widget>[
-            OutlineButton(
-              onPressed: () {
-                setState(() {
-                  question = '';
-                });
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel', style: TextStyle(
-                  color: Colors.red
-              )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.red,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            ),
-
-            FlatButton(
-              color: Colors.green,
-              onPressed: () {
-                this._insertQuestion();
-                Navigator.of(context).pop();
-              },
-              child: Text('Save', style: TextStyle(
-                  color: Colors.white
-              )
-              ),
-//              shape: RoundedRectangleBorder(side: BorderSide(
-//                  color: Colors.green,
-//                  width: 1,
-//                  style: BorderStyle.solid
-//              ), borderRadius: BorderRadius.circular(5)),
-            )
-          ],
         )
     );
   }
@@ -442,39 +442,46 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         context: context,
         builder: (_) => AlertDialog(
           title: Text("Alert!!!"),
-          content: Text("Are you sure to delete your comment?"),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel', style: TextStyle(
-                  color: Colors.red
-              )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.red,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            ),
+          content: Container(
+              height: 100,
+              child: Column(
+                children: <Widget>[
+                  Text("Are you sure to delete your comment?"),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel', style: TextStyle(
+                            color: redColor
+                        )
+                        ),
+                        shape: RoundedRectangleBorder(side: BorderSide(
+                            color: redColor,
+                            width: 1,
+                            style: BorderStyle.solid
+                        ), borderRadius: BorderRadius.circular(5)),
+                      ),
 
-            FlatButton(
-              onPressed: () {
-                this._removeComment();
-                Navigator.of(context).pop();
-              },
-              child: Text('OK', style: TextStyle(
-                  color: Colors.green
+                      FlatButton(
+                        color: Colors.green,
+                        onPressed: () {
+                          this._removeComment();
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Confirm', style: TextStyle(
+                            color: Colors.white
+                        )
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.green,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            )
-          ],
+          ),
         ));
   }
 
@@ -697,8 +704,8 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget getTabBar() {
     return TabBar(
         controller: tabController,
-        labelColor:Colors.red,
-        indicatorColor: Colors.red,
+        labelColor: redColor,
+        indicatorColor: redColor,
         unselectedLabelColor: Colors.black,
         tabs: [
           Tab(text: "DESCRIPTION"),
@@ -717,8 +724,8 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
             editComment(),
             deleteComment()
           ],
-          colorStartAnimation: Colors.red,
-          colorEndAnimation: Colors.red,
+          colorStartAnimation: redColor,
+          colorEndAnimation: redColor,
           animatedIconData: AnimatedIcons.menu_close //To principal button
       ),
     );
@@ -748,8 +755,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                 ListView.builder(
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
-                      print(']]]]]]]]]]]]]]]');
-                      print(comments[index]);
+                      print(DateTime.now());
                       return Container(
                         child: Padding(
                           padding: const EdgeInsets.all(5),
@@ -769,7 +775,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                                   color: Colors.amber,
                                 ),
                               ),
-//                              Text(Moment(comments[index]['updateAt']).format('yyyy-MM-dd')),
+                              Text(comments[index]['updatedAtFromNow'], style: TextStyle(fontSize: 12),),
                               Text(comments[index]['comment']),
                             ],
                           ),
@@ -844,7 +850,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
               right: 10,
               bottom: 10,
               child: FloatingActionButton(
-                backgroundColor: Colors.red,
+                backgroundColor: redColor,
                 onPressed: (){
                   this._modalQuestion(context);
                 },
@@ -860,7 +866,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget addComment() {
     return Container(
       child: FloatingActionButton(
-        backgroundColor: Colors.red,
+        backgroundColor: redColor,
         onPressed: (){
           this._addOrEditCommentModal(context);
         },
@@ -873,7 +879,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget editComment() {
     return Container(
       child: FloatingActionButton(
-        backgroundColor: Colors.red,
+        backgroundColor: redColor,
         onPressed: (){
           this._addOrEditCommentModal(context);
         },
@@ -886,7 +892,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   Widget deleteComment() {
     return Container(
       child: FloatingActionButton(
-        backgroundColor: Colors.red,
+        backgroundColor: redColor,
         onPressed: () {
           this._showDeleteCommentDialog();
         },

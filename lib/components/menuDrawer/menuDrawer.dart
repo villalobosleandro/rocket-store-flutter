@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import './../../api/auth_api.dart';
+import './../../utils/mColors.dart';
+
 class MenuDrawer extends StatefulWidget {
   @override
   _MenuDrawerState createState() => _MenuDrawerState();
 }
 
 class _MenuDrawerState extends State<MenuDrawer> {
+  final _api = AuthApi();
+  dynamic user;
+
+  @override
+  void initState() {
+    this._getUserInfo();
+    super.initState();
+  }
+
+  _getUserInfo() async {
+    final token = await _api.getAccessToken();
+    setState(() {
+      user = token['userProfile'];
+    });
+  }
 
   _logOut() {
     Navigator.of(context).pushNamedAndRemoveUntil('login', (Route<dynamic> route) => false);
@@ -40,137 +58,66 @@ class _MenuDrawerState extends State<MenuDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
 
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(right: BorderSide(width: 2.0, color: Colors. black12)),
-          ),
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 9,
-                child: Container(
-                  padding: const EdgeInsets.only(top: 50.0),
-                  child: Column(
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil('home', (Route<dynamic> route) => false);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border(bottom: BorderSide(width: 2.0, color: Colors.black12))
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0, left: 18.0),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(Icons.home, size: 32.0, color: Colors.black45),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 18.0),
-                                    child: Text('Home'),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil('listInvoices', (Route<dynamic> route) => false);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 18.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border(bottom: BorderSide(width: 2.0, color: Colors.black12))
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0, left: 18.0),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(Icons.receipt, size: 32.0, color: Colors.black45),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 18.0),
-                                    child: Text('Invoices'),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil('listNotifications', (Route<dynamic> route) => false);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 18.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border(bottom: BorderSide(width: 2.0, color: Colors.black12))
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0, left: 18.0),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(Icons.notifications, size: 32.0, color: Colors.black45),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 18.0),
-                                    child: Text('List Notifications'),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+      child: Column(
+        children: <Widget>[
+          Expanded(
+              flex: 9,
+              child: ListView(
+                children: <Widget>[
+                  UserAccountsDrawerHeader(
+                    decoration: BoxDecoration(
+                      color: redColor,
+                    ),
+                    accountName: Text(user['first_name'] + ' ' +user['last_name']),
+                    accountEmail: Text(user['email']),
+                    currentAccountPicture: FadeInImage(
+                      fit: BoxFit.fill,
+                      placeholder: AssetImage('assets/images/user.png'),
+                      image: NetworkImage(user['avatar']),
+                    )
                   ),
-                ),
-              ),
 
-              Expanded(
-                flex: 1,
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          _exitApp();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 18.0),
-                          child: Container(
-
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0, left: 18.0),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(Icons.exit_to_app, size: 32.0, color: Colors.black45),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 18.0),
-                                    child: Text('Logout'),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-
-                    ],
+                  ListTile(
+                    onTap: (){
+                      Navigator.of(context).pushNamedAndRemoveUntil('home', (Route<dynamic> route) => false);
+                    },
+                    title: Text('Home'),
+                    leading: Icon(Icons.home, size: 32.0, color: Colors.black)
                   ),
-                ),
+
+                  ListTile(
+                    onTap: (){
+                      Navigator.of(context).pushNamedAndRemoveUntil('listInvoices', (Route<dynamic> route) => false);
+                    },
+                    title: Text('Invoices'),
+                    leading: Icon(Icons.receipt, size: 32.0, color: Colors.black)
+                  ),
+
+                  ListTile(
+                    onTap: (){
+                      Navigator.of(context).pushNamedAndRemoveUntil('listNotifications', (Route<dynamic> route) => false);
+                    },
+                    title: Text('List Notifications'),
+                    leading: Icon(Icons.notifications, size: 32.0, color: Colors.black)
+                  ),
+
+
+                ],
               )
-            ],
           ),
-        )
+
+          Expanded(
+            flex: 1,
+            child: ListTile(
+                onTap: (){
+                  _exitApp();
+                },
+                title: Text('Logout'),
+                leading: Icon(Icons.exit_to_app, size: 32.0, color: Colors.black)
+            )
+          )
+        ],
+      ),
     );
   }
 }

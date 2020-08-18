@@ -32,9 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
     this._getActiveCampaing();
     this._getCategories();
     this._getProducts();
-//    this.numberProducts();
     this._getNotifications();
   }
+
+
 
   _getNotifications() async {
     try{
@@ -70,8 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }];
 
       final res = await _api.callMethod(context, ApiRoutes.storeCampaign, query);
-//      print('campaing => ');
-//      print(res);
       setState(() {
         campaing = res;
         consultCampaing = false;
@@ -105,11 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-//  numberProducts() async {
-//    numberOfProducts = await hook.getNumberProducts();
-////    print('=========== $numberOfProductsInCart');
-//
-//  }
 
   _getProducts() async {
     try {
@@ -123,11 +117,15 @@ class _HomeScreenState extends State<HomeScreen> {
       }];
       final products = await _api.callMethod(context, ApiRoutes.productsList, query);
 //      print('products => ');
-//      print(products);
-      if(products['data']['products'] != []) {
+//      print(products['data']);
+      if(products['data']['products'].length > 0) {
         setState(() {
           itemProducts = products['data']['products'];
           isFetching = false;
+        });
+      }else{
+        setState(() {
+          itemProducts = [];
         });
       }
       setState(() {

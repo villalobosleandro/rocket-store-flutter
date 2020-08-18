@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         title: 'Rocket Store',
         theme: ThemeData(
           primaryIconTheme: IconThemeData(color: Colors.black),
-          textTheme: Theme.of(context).textTheme.apply(bodyColor: Color(0xFF535353)),
+          textTheme: Theme.of(context).textTheme.apply(bodyColor: Color(0xFF000000)),
           visualDensity: VisualDensity.adaptivePlatformDensity,
 //          iconTheme: IconThemeData(
 //              color: Colors.red,

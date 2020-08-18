@@ -41,7 +41,18 @@ class AuthApi {
       if(response != null) {
         final token = response['token'];
         final userId = response['userId'];
-        await _session.set(token, userId);
+        var query = [{
+            'extraData': response['token'],
+         }];
+        final profile = await callMethod(context, ApiRoutes.profileGet, query);
+        var userProfile = {
+            '_id': profile['_id'],
+            'first_name': profile['first_name'],
+            'last_name': profile['last_name'],
+            'email': profile['email'],
+            'avatar': profile['avatar_url']
+          };
+        await _session.set(token, userId, userProfile);
         return true;
       }
       return false;

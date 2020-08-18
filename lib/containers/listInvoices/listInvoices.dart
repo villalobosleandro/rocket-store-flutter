@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-//import 'package:moment/moment.dart';
 
 import './../invoiceDetail/invoiceDetail.dart';
 import './../../components/topBar.dart';
@@ -9,6 +8,7 @@ import './../../components/menuDrawer/menuDrawer.dart';
 import './../../api/auth_api.dart';
 import './../../hooks/useGetAsyncStorageProduct.dart';
 import './../../utils/app_config.dart';
+import './../../utils/mColors.dart';
 
 
 class ListInvoices extends StatefulWidget {
@@ -114,7 +114,7 @@ class _ListInvoicesState extends State<ListInvoices> {
       return Column(
         children: <Widget>[
           Container(
-            color: Colors.red,
+            color: redColor,
             height: 50,
             child: Row(
               children: <Widget>[
@@ -203,14 +203,14 @@ class _ListInvoicesState extends State<ListInvoices> {
                           width: MediaQuery.of(context).size.width / 4,
                           alignment: Alignment(0, 0),
                           height: 50,
-                          child: Text(invoices[index]['amount'].toString(),  textAlign: TextAlign.center)
+                          child: Text(_api.formatter(invoices[index]['amount']).toString(),  textAlign: TextAlign.center)
                       ),
 
                       Container(
                           width: MediaQuery.of(context).size.width / 4,
                           alignment: Alignment(0, 0),
                           height: 50,
-//                          child: Text(Moment(invoices[index]['updateAt']).format('yyyy-MM-dd'),  textAlign: TextAlign.center)
+                          child: Text(invoices[index]['createdAtFormatted'],  textAlign: TextAlign.center)
                       ),
 
                       Container(
@@ -228,9 +228,6 @@ class _ListInvoicesState extends State<ListInvoices> {
               },
             ),
           )
-
-
-
         ],
       );
     }

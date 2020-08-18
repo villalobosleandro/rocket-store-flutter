@@ -13,6 +13,7 @@ import './../../hooks/useGetAsyncStorageProduct.dart';
 import './../../api/auth_api.dart';
 import './../../utils/app_config.dart';
 import './../../utils/dialogs.dart';
+import './../../utils/mColors.dart';
 
 class ShoppingCart extends StatefulWidget {
   @override
@@ -100,45 +101,43 @@ class _ShoppingCartState extends State<ShoppingCart> {
         context: context,
         builder: (_) => AlertDialog(
           title: Text('Are you sure to proceed with the purchase?'),
-
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel', style: TextStyle(
-                  color: Colors.red
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              OutlineButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel', style: TextStyle(
+                    color: redColor
                 )
+                ),
+                shape: RoundedRectangleBorder(side: BorderSide(
+                    color: redColor,
+                    width: 1,
+                    style: BorderStyle.solid
+                ), borderRadius: BorderRadius.circular(5)),
               ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.red,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            ),
 
-            FlatButton(
-              onPressed: () {
-                this._payment();
-                Navigator.of(context).pop();
-              },
-              child: Text('Save', style: TextStyle(
-                  color: Colors.green
+              FlatButton(
+                color: Colors.green,
+                onPressed: () {
+                  this._payment();
+                  Navigator.of(context).pop();
+                },
+                child: Text('Save', style: TextStyle(
+                    color: Colors.white
                 )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.green,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            )
-          ],
+                ),
+              )
+            ],
+          ),
         )
     );
   }
 
   _payment() async {
-    print('entro');
+//    print('entro');
     setState(() {
       isFetching = true;
     });
@@ -210,40 +209,38 @@ class _ShoppingCartState extends State<ShoppingCart> {
         context: context,
         builder: (_) => AlertDialog(
           title: Text('Are you sure to remove all products from the cart?'),
-
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel', style: TextStyle(
-                  color: Colors.red
-              )
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              OutlineButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cancel', style: TextStyle(
+                    color: redColor
+                )
+                ),
+                shape: RoundedRectangleBorder(side: BorderSide(
+                    color: redColor,
+                    width: 1,
+                    style: BorderStyle.solid
+                ), borderRadius: BorderRadius.circular(5)),
               ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.red,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            ),
 
-            FlatButton(
-              onPressed: () {
-                hook.deleteCart();
-                this.getNumberProducts();
-                Navigator.of(context).pop();
-              },
-              child: Text('Save', style: TextStyle(
-                  color: Colors.green
+              FlatButton(
+                color: Colors.green,
+                onPressed: () {
+                  hook.deleteCart();
+                  this.getNumberProducts();
+                  Navigator.of(context).pop();
+                },
+                child: Text('Save', style: TextStyle(
+                    color: Colors.white
+                )
+                ),
               )
-              ),
-              shape: RoundedRectangleBorder(side: BorderSide(
-                  color: Colors.green,
-                  width: 1,
-                  style: BorderStyle.solid
-              ), borderRadius: BorderRadius.circular(5)),
-            )
-          ],
+            ],
+          ),
         )
     );
 
@@ -304,7 +301,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 Row(
                   children: <Widget>[
                     Radio(
-                      activeColor: Colors.red,
+                      activeColor: redColor,
                       value: 0,
                       groupValue: _radioValue1,
                       onChanged: _handleRadioValueChange1,
@@ -315,7 +312,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     ),
 
                     Radio(
-                      activeColor: Colors.red,
+                      activeColor: redColor,
                       value: 1,
                       groupValue: _radioValue1,
                       onChanged: _handleRadioValueChange1,
@@ -396,7 +393,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                               fit: FlexFit.tight,
                                               child: Padding(
                                                 padding: const EdgeInsets.only(top: 8.0),
-                                                child: Text(_radioValue1 == 0 ? products[index]['price'].toString() : products[index]['priceOnCredit'].toString()),
+                                                child: Text(_radioValue1 == 0 ? _api.formatter(products[index]['price']).toString() : _api.formatter(products[index]['priceOnCredit']).toString()),
                                               )
                                             ),
                                             Flexible(
@@ -406,9 +403,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                                   children: <Widget>[
                                                     ClipOval(
                                                       child: Material(
-                                                        color: Colors.red, // button color
+                                                        color: redColor,
                                                         child: InkWell(
-//                                                          splashColor: Colors.red, // inkwell color
                                                           child: SizedBox(
                                                               width: 40,
                                                               height: 40,
@@ -425,9 +421,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                                     ),
                                                     ClipOval(
                                                       child: Material(
-                                                        color: Colors.red, // button color
+                                                        color: redColor,
                                                         child: InkWell(
-//                                                          splashColor: Colors.red, // inkwell color
                                                           child: SizedBox(
                                                               width: 40,
                                                               height: 40,
@@ -486,14 +481,25 @@ class _ShoppingCartState extends State<ShoppingCart> {
           ),
 
           Flexible(
-            flex: 1,
+            flex: 2,
             fit: FlexFit.tight,
             child: Container(
               width: size.width,
-              child: Row(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Text('Total Pay:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                      Text(_radioValue1 == 0 ?
+                      '\$  ' + _api.formatter(totalAmountCount).toString() :
+                      '\$  ' + _api.formatter(totalAmountCredit).toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ],
+                  ),
                   RaisedButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
@@ -505,20 +511,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     textColor: Colors.white,
 
                     child: Container(
-                      width: 80,
+                      width: size.width - 50,
                       height: 40,
                       alignment: Alignment(0, 0),
                       child: Text("Buy now".toUpperCase(),
                           style: TextStyle(fontSize: 14)),
                     ),
                   ),
-
-                  Text(_radioValue1 == 0 ?
-                    '\$  ' + totalAmountCount.toString() :
-                    '\$  ' + totalAmountCredit.toString(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  )
-
                 ],
               ),
             ),

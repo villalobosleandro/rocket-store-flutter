@@ -3,12 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Session {
   final key = 'SESSION';
-  final storage = new FlutterSecureStorage();
+  final storage = FlutterSecureStorage();
 
-  set(String token, String userId) async {
+  set(String token, String userId, dynamic userProfile) async {
     final data = {
       "token": token,
-      "userId": userId
+      "userId": userId,
+      "userProfile": userProfile
     };
 
     await storage.write(key: key, value: jsonEncode(data));

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 import './../hooks/useGetAsyncStorageProduct.dart';
+import './../utils/mColors.dart';
 
 
 class TopBar extends StatefulWidget {
@@ -72,7 +72,7 @@ class _TopBarState extends State<TopBar> {
                     child: Container(
                       padding: EdgeInsets.all(1),
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: redColor,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       constraints: BoxConstraints(
@@ -107,7 +107,7 @@ class _TopBarState extends State<TopBar> {
                       child: Container(
                         padding: EdgeInsets.all(1),
                         decoration: BoxDecoration(
-                          color: Colors.red,
+                          color: redColor,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         constraints: BoxConstraints(
