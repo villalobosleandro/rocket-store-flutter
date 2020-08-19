@@ -105,18 +105,18 @@ class _ShoppingCartState extends State<ShoppingCart> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               OutlineButton(
+                borderSide: BorderSide(
+                    color: redColor,
+                    width: 1,
+                    style: BorderStyle.solid,
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
                 child: Text('Cancel', style: TextStyle(
                     color: redColor
-                )
+                  )
                 ),
-                shape: RoundedRectangleBorder(side: BorderSide(
-                    color: redColor,
-                    width: 1,
-                    style: BorderStyle.solid
-                ), borderRadius: BorderRadius.circular(5)),
               ),
 
               FlatButton(
@@ -213,6 +213,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               OutlineButton(
+                borderSide: BorderSide(
+                  color: redColor,
+                  width: 1,
+                  style: BorderStyle.solid,
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -220,11 +225,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                     color: redColor
                 )
                 ),
-                shape: RoundedRectangleBorder(side: BorderSide(
-                    color: redColor,
-                    width: 1,
-                    style: BorderStyle.solid
-                ), borderRadius: BorderRadius.circular(5)),
               ),
 
               FlatButton(
@@ -336,8 +336,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 child: ListView.builder(
                     itemCount: products.length,
                     itemBuilder: (BuildContext context, int index) {
-//                      print('=============');
-//                      print(products);
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                         child: Container(
@@ -361,7 +359,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(4.0),
                                         child: FadeInImage(
-                                          fit: BoxFit.cover,
+                                          fit: BoxFit.fill,
                                           placeholder: AssetImage('assets/images/loading.gif'),
                                           image: NetworkImage(products[index]['img']),
                                         ),
@@ -481,13 +479,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
           ),
 
           Flexible(
-            flex: 2,
+            flex: 1,
             fit: FlexFit.tight,
             child: Container(
               width: size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -512,7 +510,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
                     child: Container(
                       width: size.width - 50,
-                      height: 40,
+                      height: 25,
                       alignment: Alignment(0, 0),
                       child: Text("Buy now".toUpperCase(),
                           style: TextStyle(fontSize: 14)),

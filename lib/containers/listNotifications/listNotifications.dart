@@ -35,6 +35,7 @@ class _ListNotificationsState extends State<ListNotifications> {
 
       final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
       if(notifi['success'] == true) {
+        print(notifi['data']);
         for (var i = 0; i < notifi['data'].length; ++i) {
           if(notifi['data'][i]['unread'] == true) {
             setState(() {
@@ -143,11 +144,13 @@ class _ListNotificationsState extends State<ListNotifications> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(notifications[index]['title'].toLowerCase()),
-//                Text('date'),
+                      Text(notifications[index]['createdAtFormatted']),
                     ],
                   ),
                   isThreeLine: true,
-                  trailing: notifications[index]['unread'] == true ? Icon(Icons.notification_important, color: redColor,) : Icon(Icons.done_all, color: Colors.blue),
+                  trailing: notifications[index]['unread'] == true ?
+                    Icon(Icons.notification_important, color: redColor) :
+                    Icon(Icons.done_all, color: Colors.blue),
                   onTap: () {
                     var temp = {
                       '_id':  notifications[index]['relatedId']

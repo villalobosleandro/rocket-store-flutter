@@ -236,7 +236,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     initialValue: descripcion,
                     onChanged: (value) => descripcion = value,
                     keyboardType: TextInputType.multiline,
-                    maxLines: null,
+                    maxLines: 2,
                     textAlign: TextAlign.start,
                   ),
                 ),
@@ -247,6 +247,11 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     OutlineButton(
+                      borderSide: BorderSide(
+                        color: redColor,
+                        width: 1,
+                        style: BorderStyle.solid,
+                      ),
                       onPressed: () {
                         setState(() {
                           descripcion = '';
@@ -256,13 +261,8 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                       },
                       child: Text('Cancel', style: TextStyle(
                           color: Colors.red
-                      )
+                        )
                       ),
-                      shape: RoundedRectangleBorder(side: BorderSide(
-                          color: Colors.red,
-                          width: 1,
-                          style: BorderStyle.solid
-                      ), borderRadius: BorderRadius.circular(5)),
                     ),
 
                     FlatButton(
@@ -305,15 +305,20 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     initialValue: question,
                     onChanged: (value) => question = value,
                     keyboardType: TextInputType.multiline,
-                    maxLines: null,
+                    maxLines: 2,
                     textAlign: TextAlign.start,
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     OutlineButton(
+                      borderSide: BorderSide(
+                        color: redColor,
+                        width: 1,
+                        style: BorderStyle.solid,
+                      ),
                       onPressed: () {
                         setState(() {
                           question = '';
@@ -322,13 +327,8 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                       },
                       child: Text('Cancel', style: TextStyle(
                           color: Colors.red
-                      )
+                        )
                       ),
-                      shape: RoundedRectangleBorder(side: BorderSide(
-                          color: Colors.red,
-                          width: 1,
-                          style: BorderStyle.solid
-                      ), borderRadius: BorderRadius.circular(5)),
                     ),
 
                     FlatButton(
@@ -447,23 +447,23 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
               child: Column(
                 children: <Widget>[
                   Text("Are you sure to delete your comment?"),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       OutlineButton(
+                        borderSide: BorderSide(
+                          color: redColor,
+                          width: 1,
+                          style: BorderStyle.solid,
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                         child: Text('Cancel', style: TextStyle(
                             color: redColor
-                        )
+                          )
                         ),
-                        shape: RoundedRectangleBorder(side: BorderSide(
-                            color: redColor,
-                            width: 1,
-                            style: BorderStyle.solid
-                        ), borderRadius: BorderRadius.circular(5)),
                       ),
 
                       FlatButton(
@@ -492,7 +492,13 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         builder: (_) => AlertDialog(
           content: Container(
             height: 350.0,
-            child: images.length > 1 ? Swiper(
+            child: images.length == 1 ? FadeInImage(
+              fit: BoxFit.fill,
+              height: 350.0,
+              width: 350.0,
+              placeholder: AssetImage('assets/images/loading.gif'),
+              image: NetworkImage(images[0]),
+            ) : Swiper(
               containerHeight: 350.0,
               layout: SwiperLayout.TINDER,
               autoplay: true,
@@ -508,12 +514,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                   image: NetworkImage(images[index]),
                 );
               },
-            ) : FadeInImage(
-              fit: BoxFit.fill,
-              height: 350.0,
-              width: 350.0,
-              placeholder: AssetImage('assets/images/loading.gif'),
-              image: NetworkImage(images[0]),
             ),
           ),
         )
@@ -556,7 +556,14 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     this._showModalImagePreview(productDetail['pictures'], context);
                   },
                   child: Container(
-                      child: productDetail['pictures'].length > 1 ? Swiper(
+                      child: productDetail['pictures'].length == 1 ?  Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FadeInImage(
+                          fit: BoxFit.fill,
+                          placeholder: AssetImage('assets/images/loading.gif'),
+                          image: NetworkImage(productDetail['pictures'][0]),
+                        ),
+                      ) : Swiper(
                         autoplay: true,
                         itemBuilder: (BuildContext context, int index) {
                           return FadeInImage(
@@ -565,18 +572,11 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                             image: NetworkImage(productDetail['pictures'][index]),
                           );
                         },
-                        itemCount: 3,
+                        itemCount: productDetail['pictures'].length,
                         itemWidth: 300.0,
                         itemHeight: 300.0,
                         layout: SwiperLayout.TINDER,
-                      ) : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: FadeInImage(
-                          fit: BoxFit.fill,
-                          placeholder: AssetImage('assets/images/loading.gif'),
-                          image: NetworkImage(productDetail['pictures'][0]),
-                        ),
-                      )
+                      ),
                   ),
                 ),
               ),
@@ -755,7 +755,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                 ListView.builder(
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
-                      print(DateTime.now());
                       return Container(
                         child: Padding(
                           padding: const EdgeInsets.all(5),
@@ -775,7 +774,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                                   color: Colors.amber,
                                 ),
                               ),
-                              Text(comments[index]['updatedAtFromNow'], style: TextStyle(fontSize: 12),),
+                              Text(comments[index]['updatedAtFromNow'], style: TextStyle(fontSize: 12)),
                               Text(comments[index]['comment']),
                             ],
                           ),
@@ -816,25 +815,13 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.chat_bubble, color: Colors.grey),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text(questions[index]['message'], textAlign: TextAlign.justify, style: TextStyle(fontWeight: FontWeight.bold)),
-                              )
-                            ],
+                          ListTile(
+                            title: Text(questions[index]['message'],
+                                    textAlign: TextAlign.justify,
+                                ),
+                            leading: Icon(Icons.chat, color: Colors.grey),
+                            subtitle: questions[index]['answer'] != null ? Text(questions[index]['answer']['message']) : Container(),
                           ),
-
-                          questions[index]['answer'] != null ? Row(
-                            children: <Widget>[
-                              Icon(Icons.chat, color: Colors.grey),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text(questions[index]['answer']['message'], textAlign: TextAlign.justify),
-                              )
-                            ],
-                          ): Container()
                         ],
                       ),
                     ),

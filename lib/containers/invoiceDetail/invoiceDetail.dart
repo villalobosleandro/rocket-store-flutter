@@ -221,13 +221,37 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   Widget _amountPart() {
     var number = _getTotalAmount();
     return Container(
-      height: 80,
-      child: Column(
-        children: <Widget>[
-          Text('Subtotal'),
-          Text('iva'),
-          Text(_api.formatter(number))
-        ],
+      height: 65,
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text('Subtotal: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(_api.formatter(number)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text('IPC%: '),
+                Text(invoice['fee_amount'] != null ? invoice['fee_amount'].toString() : '0')
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Text('Total: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(_api.formatter(number)),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
