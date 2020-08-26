@@ -181,7 +181,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           }
 
           return Container(
-            width: 200,
+//            width: 200,
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
@@ -205,11 +205,18 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                     invoice['method'] == 'credito' ? Text(' X ') : Container(),
                     invoice['method'] == 'credito' ? Text(
                         invoice['items'][index]['numberOfFees'].toString() + ' Quotes',
+                        style: TextStyle(fontSize: 12),
                     ) : Container(),
 
                   ],
                 ),
-                trailing: Text(_api.formatter(price).toString()),
+                trailing: Column(
+//                  crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(_api.formatter(price).toString(), style: TextStyle(fontSize: 12))
+                  ],
+                ),
               ),
             ),
           );

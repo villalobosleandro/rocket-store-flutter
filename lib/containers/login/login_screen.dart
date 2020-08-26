@@ -147,9 +147,9 @@ class _LoginState extends State<Login> {
                           ),
                         ),
 
-                        SizedBox(height: responsive.hp(20)),
+                        SizedBox(height: responsive.hp(32)),
 
-                        SizedBox(height: responsive.hp(12)),
+//                        SizedBox(height: responsive.hp(12)),
 
                         ConstrainedBox(
                           constraints: BoxConstraints(
@@ -167,7 +167,7 @@ class _LoginState extends State<Login> {
                                     onChanged: (value) => _email = value,
                                     decoration: InputDecoration(
                                       filled: true,
-                                      fillColor: Colors.black,
+                                      fillColor: Colors.black38,
                                       hintText: 'Email',
                                       border: UnderlineInputBorder(
                                         borderRadius: BorderRadius.circular(5)
@@ -191,7 +191,7 @@ class _LoginState extends State<Login> {
                                     onChanged: (value) => _password = value,
                                     decoration: InputDecoration(
                                       filled: true,
-                                      fillColor: Colors.black,
+                                      fillColor: Colors.black38,
                                       hintText: 'Password',
                                       border: UnderlineInputBorder(
                                           borderRadius: BorderRadius.circular(5)

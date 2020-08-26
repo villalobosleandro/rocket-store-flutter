@@ -261,7 +261,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                       },
                       child: Text('Cancel', style: TextStyle(
                           color: Colors.red
-                        )
+                      )
                       ),
                     ),
 
@@ -327,7 +327,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                       },
                       child: Text('Cancel', style: TextStyle(
                           color: Colors.red
-                        )
+                      )
                       ),
                     ),
 
@@ -339,7 +339,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                       },
                       child: Text('Save', style: TextStyle(
                           color: Colors.white
-                        )
+                      )
                       ),
                     )
                   ],
@@ -462,7 +462,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                         },
                         child: Text('Cancel', style: TextStyle(
                             color: redColor
-                          )
+                        )
                         ),
                       ),
 
@@ -486,7 +486,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   }
 
   _showModalImagePreview(images, context) {
-    print(images.length);
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -540,6 +539,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
   }
 
   Widget _buildBody() {
+//    print(productDetail);
     return Column(
       children: <Widget>[
 
@@ -556,27 +556,27 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     this._showModalImagePreview(productDetail['pictures'], context);
                   },
                   child: Container(
-                      child: productDetail['pictures'].length == 1 ?  Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: FadeInImage(
+                    child: productDetail['pictures'].length == 1 ?  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FadeInImage(
+                        fit: BoxFit.fill,
+                        placeholder: AssetImage('assets/images/loading.gif'),
+                        image: NetworkImage(productDetail['pictures'][0]),
+                      ),
+                    ) : Swiper(
+                      autoplay: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return FadeInImage(
                           fit: BoxFit.fill,
                           placeholder: AssetImage('assets/images/loading.gif'),
-                          image: NetworkImage(productDetail['pictures'][0]),
-                        ),
-                      ) : Swiper(
-                        autoplay: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return FadeInImage(
-                            fit: BoxFit.fill,
-                            placeholder: AssetImage('assets/images/loading.gif'),
-                            image: NetworkImage(productDetail['pictures'][index]),
-                          );
-                        },
-                        itemCount: productDetail['pictures'].length,
-                        itemWidth: 300.0,
-                        itemHeight: 300.0,
-                        layout: SwiperLayout.TINDER,
-                      ),
+                          image: NetworkImage(productDetail['pictures'][index]),
+                        );
+                      },
+                      itemCount: productDetail['pictures'].length,
+                      itemWidth: 300.0,
+                      itemHeight: 300.0,
+                      layout: SwiperLayout.TINDER,
+                    ),
                   ),
                 ),
               ),
@@ -609,7 +609,6 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                         allowHalfRating: true,
                         itemCount: 5,
                         ignoreGestures: true,
-//                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                         itemBuilder: (context, _) => Icon(
                           Icons.star,
                           color: Colors.amber,
@@ -667,6 +666,7 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
                     children: <Widget>[
                       Text('price on credit'.toUpperCase()),
                       Text("\$ " + _api.formatter(productDetail['priceOnCredit']).toString()),
+                      Text('X ' + productDetail['numberOfFees'].toString() + ' Quotes')
                     ],
                   ),
                 ),
@@ -688,14 +688,14 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
         Expanded(
           flex: 6,
           child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              flexibleSpace: SafeArea(
-                child: getTabBar(),
+              appBar: AppBar(
+                elevation: 0,
+                backgroundColor: Colors.white,
+                flexibleSpace: SafeArea(
+                  child: getTabBar(),
+                ),
               ),
-            ),
-            body: getTabBarPages()),
+              body: getTabBarPages()),
         ),
       ],
     );
@@ -749,104 +749,216 @@ class _DetailsScreenState extends State<DetailsScreen> with SingleTickerProvider
       //comentarios
       Container(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: comments.length > 0 ? Stack(
-              children: <Widget>[
-                ListView.builder(
-                    itemCount: comments.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(comments[index]['user']['name'], style: TextStyle(fontWeight: FontWeight.bold),  textAlign: TextAlign.justify),
-                              RatingBar(
-                                initialRating: comments[index]['rating'].toDouble(),
-                                direction: Axis.horizontal,
-                                itemSize: 20,
-                                allowHalfRating: true,
-                                itemCount: 5,
-                                ignoreGestures: true,
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                ),
-                              ),
-                              Text(comments[index]['updatedAtFromNow'], style: TextStyle(fontSize: 12)),
-                              Text(comments[index]['comment']),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                ),
+              padding: const EdgeInsets.all(8.0),
+              child: comments.length > 0 ? Stack(
+                children: <Widget>[
+                  ListView.builder(
+                      itemCount: comments.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                        width: 50.0,
+                                        height: 50.0,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(25.0),
+                                          child: FadeInImage(
+                                            fit: BoxFit.fill,
+                                            placeholder: AssetImage('assets/images/loading.gif'),
+                                            image: NetworkImage(comments[index]['user']['img']),
+                                          )
+                                        ),
+                                    ),
 
-                floatingButtons()
-              ],
-            ) : Stack(
-              children: <Widget>[
-                Center(
-                  child: Text('No comments to show'),
-                ),
-                Positioned(
-                  right: 10,
-                  bottom: 10,
-                  child: addComment(),
-                )
-              ],
-            )
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(comments[index]['user']['name'], style: TextStyle(fontWeight: FontWeight.bold),  textAlign: TextAlign.justify),
+                                          Text(comments[index]['updatedAtFromNow'], style: TextStyle(fontSize: 12)),
+                                          RatingBar(
+                                            initialRating: comments[index]['rating'].toDouble(),
+                                            direction: Axis.horizontal,
+                                            itemSize: 20,
+                                            allowHalfRating: true,
+                                            itemCount: 5,
+                                            ignoreGestures: true,
+                                            itemBuilder: (context, _) => Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                                  child: Text(comments[index]['comment']),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                  ),
+
+                  floatingButtons()
+                ],
+              ) : Stack(
+                children: <Widget>[
+                  Center(
+                    child: Text('No comments to show'),
+                  ),
+                  Positioned(
+                    right: 10,
+                    bottom: 10,
+                    child: addComment(),
+                  )
+                ],
+              )
           )
       ),
 
       //preguntas
-      Container(
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: questions.length > 0 ? ListView.builder(
-                itemCount: questions.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                            title: Text(questions[index]['message'],
-                                    textAlign: TextAlign.justify,
-                                ),
-                            leading: Icon(Icons.chat, color: Colors.grey),
-                            subtitle: questions[index]['answer'] != null ? Text(questions[index]['answer']['message']) : Container(),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              )
-                  : Center(
-                child: Text('No questions'),
+      Column(
+
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+              child: TextFormField(
+                textCapitalization: TextCapitalization.none,
+                onChanged: (value){
+                  setState(() {
+                    question = value;
+                  });
+                } ,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  hintText: 'Write your cuestion',
+                  contentPadding: EdgeInsets.zero,
+//                      enabledBorder: OutlineInputBorder(
+//                        borderSide: BorderSide(color: Colors.grey, width: 1.0),
+//                        borderRadius: const BorderRadius.all(const Radius.circular(5.0)),
+//                      ),
+
+                ),
               ),
             ),
+          ),
 
-            Positioned(
-              right: 10,
-              bottom: 10,
-              child: FloatingActionButton(
-                backgroundColor: redColor,
-                onPressed: (){
-                  this._modalQuestion(context);
-                },
-                child: Icon(Icons.add),
-              ),
-            )
-          ],
-        )
-      )
+          question != '' ? Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: FlatButton(
+                    color: Colors.green,
+                    onPressed: () {
+                      this._insertQuestion();
+                    },
+                    child: Text('Send', style: TextStyle(
+                        color: Colors.white
+                    )
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ) : Container(),
+
+          questions.length > 0 ? Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: questions.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        ListTile(
+                          title: Text(questions[index]['message'],
+                            textAlign: TextAlign.justify,
+                          ),
+                          leading: Icon(questions[index]['answer'] != null ? Icons.chat : Icons.chat_bubble, color: Colors.grey),
+                          subtitle: questions[index]['answer'] != null ? Text(questions[index]['answer']['message']) : Container(),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ) : Center(
+            child: Text('No questions'),
+          )
+
+//          Container(
+//              child: Stack(
+//                children: <Widget>[
+//                  Padding(
+//                    padding: const EdgeInsets.all(8.0),
+//                    child: questions.length > 0 ? ListView.builder(
+//                      itemCount: questions.length,
+//                      itemBuilder: (context, index) {
+//                        return Container(
+//                          child: Padding(
+//                            padding: const EdgeInsets.all(5),
+//                            child: Column(
+//                              crossAxisAlignment: CrossAxisAlignment.start,
+//                              children: <Widget>[
+//                                ListTile(
+//                                  title: Text(questions[index]['message'],
+//                                    textAlign: TextAlign.justify,
+//                                  ),
+//                                  leading: Icon(Icons.chat, color: Colors.grey),
+//                                  subtitle: questions[index]['answer'] != null ? Text(questions[index]['answer']['message']) : Container(),
+//                                ),
+//                              ],
+//                            ),
+//                          ),
+//                        );
+//                      },
+//                    )
+//                        : Center(
+//                      child: Text('No questions'),
+//                    ),
+//                  ),
+//
+//                  Positioned(
+//                    right: 10,
+//                    bottom: 10,
+//                    child: FloatingActionButton(
+//                      backgroundColor: redColor,
+//                      onPressed: (){
+//                        this._modalQuestion(context);
+//                      },
+//                      child: Icon(Icons.add),
+//                    ),
+//                  )
+//                ],
+//              )
+//          )
+
+
+        ],
+      ),
     ]);
   }
 

@@ -106,6 +106,10 @@ class _ListInvoicesState extends State<ListInvoices> {
   }
 
   Widget _buildBody() {
+    print('==============');
+    print(invoices);
+    print('==============');
+    print(invoices.length);
     if(invoices.length == 0) {
       return Center(
         child: Text('There are no invoices'),

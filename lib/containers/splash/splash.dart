@@ -14,12 +14,12 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   final _authApi = AuthApi();
-  final storage = new FlutterSecureStorage();
+  final storage = FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    this.connectionBackend();
+//    this.connectionBackend();
     this.check();
   }
 

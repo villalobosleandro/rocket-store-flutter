@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:meteorify/meteorify.dart';
 import 'package:provider/provider.dart';
 
 import './containers/home/home_screen.dart';
@@ -12,13 +14,40 @@ import './containers/configuration/configuration.dart';
 import './containers/invoiceDetail/invoiceDetail.dart';
 import './containers/example/example.dart';
 import './containers/listNotifications/listNotifications.dart';
+import './utils/globals.dart' as globals;
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final storage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    this.connectionBackend();
+    super.initState();
+  }
+
+  connectionBackend() async {
+    try{
+      final response = await Meteor.connect(globals.url);
+
+      if(response != null) {
+        print('status = $response');
+      }
+    }catch(error){
+      await storage.deleteAll();
+      Navigator.pushReplacementNamed(context, 'login');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -48,9 +77,9 @@ class MyApp extends StatelessWidget {
           primaryIconTheme: IconThemeData(color: Colors.black),
           textTheme: Theme.of(context).textTheme.apply(bodyColor: Color(0xFF000000)),
           visualDensity: VisualDensity.adaptivePlatformDensity,
-//          iconTheme: IconThemeData(
-//              color: Colors.red,
-//          ),
+          primaryColor: Color(0xFFFF4122),
+//          accentColor: Colors.orange,
+//          hintColor: Colors.green
         ),
         home: SplashPage(),
         routes: routes,

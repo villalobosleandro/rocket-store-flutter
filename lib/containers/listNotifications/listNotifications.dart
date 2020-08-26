@@ -35,7 +35,7 @@ class _ListNotificationsState extends State<ListNotifications> {
 
       final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
       if(notifi['success'] == true) {
-        print(notifi['data']);
+//        print(notifi['data']);
         for (var i = 0; i < notifi['data'].length; ++i) {
           if(notifi['data'][i]['unread'] == true) {
             setState(() {
