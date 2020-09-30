@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rocket_store_flutter/containers/details/details_screen.dart';
+import 'package:rocket_store_flutter/containers/invoiceDetail/invoiceDetail.dart';
 
 import './../../components/topBar.dart';
 import './../../components/menuDrawer/menuDrawer.dart';
@@ -156,11 +157,20 @@ class _ListNotificationsState extends State<ListNotifications> {
                       '_id':  notifications[index]['relatedId']
                     };
                     this._setNotification(notifications[index]['_id']);
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context) => DetailsScreen(
-                            product : temp)),
-                            (route) => false
-                    );
+                    if(notifications[index]['relatedCollection'] == 'store_product') {
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (context) => DetailsScreen(
+                              product : temp)),
+                              (route) => false
+                      );
+                    }else {
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (context) => InvoiceDetail(
+                              invoiceId : temp
+                          )), (route) => false
+                      );
+                    }
+
                   },
                 );
               },

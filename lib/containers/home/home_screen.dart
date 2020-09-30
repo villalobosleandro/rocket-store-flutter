@@ -31,22 +31,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     this._getActiveCampaing();
     this._getCategories();
-    this._getProducts();
     this._getNotifications();
+    this._getProducts();
   }
-
-
 
   _getNotifications() async {
     try{
       final token = await _api.getAccessToken();
+//      print('token => '+ token['token']);
       var query = [{
         'extraData': token['token'],
         'unread': true
       }];
 
       final notifi = await _api.callMethod(context, ApiRoutes.notificationsList, query);
-//      print('notificaciones => $notifi');
+//      print('notificaciones ===============> $notifi');
       if(notifi['success'] == true) {
         setState(() {
           notifications = notifi['data'];
@@ -71,6 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }];
 
       final res = await _api.callMethod(context, ApiRoutes.storeCampaign, query);
+//      print('===============campaint');
+//      print(res);
       setState(() {
         campaing = res;
         consultCampaing = false;
@@ -90,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }];
 
       final res = await _api.callMethod(context, ApiRoutes.listCategories, query);
-//      print('caregorias => ');
+//      print('caregorias ================> ');
 //      print(res);
 
       setState(() {
@@ -104,7 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   _getProducts() async {
     try {
       final token = await _api.getAccessToken();
@@ -116,8 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
         'extraData': token['token']
       }];
       final products = await _api.callMethod(context, ApiRoutes.productsList, query);
-//      print('products => ');
-//      print(products['data']);
+//      print('products ===================> ');
+//      print(products['data']['products']);
       if(products['data']['products'].length > 0) {
         setState(() {
           itemProducts = products['data']['products'];
@@ -193,6 +193,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody() {
+//    print('-----------------');
+//    print(consultCampaing);
+//    print(isFetching );
+//    print(consultCategories);
+//    print(consultNotifi);
     return Container(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -309,6 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }else {
+//        print('no hay productos');
         return Center(
           child: Text('No products'),
         );

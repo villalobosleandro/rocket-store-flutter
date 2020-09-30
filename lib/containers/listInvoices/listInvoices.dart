@@ -106,10 +106,10 @@ class _ListInvoicesState extends State<ListInvoices> {
   }
 
   Widget _buildBody() {
-    print('==============');
-    print(invoices);
-    print('==============');
-    print(invoices.length);
+//    print('==============');
+//    print(invoices);
+//    print('==============');
+//    print(invoices.length);
     if(invoices.length == 0) {
       return Center(
         child: Text('There are no invoices'),
@@ -183,8 +183,8 @@ class _ListInvoicesState extends State<ListInvoices> {
                   onTap: (){
                     Navigator.pushAndRemoveUntil(context,
                         MaterialPageRoute(builder: (context) => InvoiceDetail(
-                            invoiceId : invoices[index]['_id'])),
-                            (route) => false
+                            invoiceId : invoices[index]['_id'])
+                        ), (route) => false
                     );
 
                   },
